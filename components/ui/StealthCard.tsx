@@ -28,7 +28,9 @@ export function StealthCard({ project }: { project: StealthProject }) {
         {project.title}
       </h3>
       <p className="mt-3 text-base font-medium leading-7 text-slate-300">{project.summary}</p>
-      <p className="mt-4 text-sm leading-7 text-muted">{project.description}</p>
+      {project.description ? (
+        <p className="mt-4 text-sm leading-7 text-muted">{project.description}</p>
+      ) : null}
 
       <p className="mt-6 rounded-2xl border border-white/10 bg-white/[0.025] px-4 py-3 font-mono text-[0.72rem] uppercase tracking-[0.1em] text-slate-300">
         {project.impact}

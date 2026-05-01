@@ -47,17 +47,6 @@ export function Hero() {
             })}
           </div>
         </div>
-
-        <div className="mx-auto mt-20 grid max-w-3xl gap-3 sm:grid-cols-2">
-          <div className="glass-panel rounded-2xl p-5">
-            <p className="font-mono text-[0.68rem] uppercase tracking-[0.14em] text-cyan">Focus</p>
-            <p className="mt-3 text-sm leading-6 text-muted">AI engineering, product systems, and measurable impact.</p>
-          </div>
-          <div className="glass-panel rounded-2xl p-5">
-            <p className="font-mono text-[0.68rem] uppercase tracking-[0.14em] text-sky">Location</p>
-            <p className="mt-3 text-sm leading-6 text-muted">Toronto, Ontario. Canadian citizen.</p>
-          </div>
-        </div>
       </div>
     </section>
   );

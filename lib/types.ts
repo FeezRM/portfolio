@@ -12,7 +12,8 @@ export interface Project {
   liveUrl?: string;
 }
 
-export interface StealthProject extends Project {
+export interface StealthProject extends Omit<Project, "description"> {
+  description?: string;
   teaser: string;
   mosaicCells: string[];
 }

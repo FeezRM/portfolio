@@ -1,11 +1,9 @@
 import type { Project } from "@/lib/types";
 
-export function ProjectCard({ project, featured = false }: { project: Project; featured?: boolean }) {
+export function ProjectCard({ project }: { project: Project }) {
   return (
     <article
-      className={`glass-panel group flex min-h-full flex-col rounded-3xl p-6 transition duration-200 hover:-translate-y-1 hover:border-cyan/30 hover:shadow-glow md:p-7 ${
-        featured ? "lg:col-span-6" : "lg:col-span-4"
-      }`}
+      className="glass-panel group flex min-h-full flex-col rounded-3xl p-6 transition duration-200 hover:-translate-y-1 hover:border-cyan/30 hover:shadow-glow md:p-7"
     >
       <div className="mb-7 flex items-center justify-between gap-4">
         <p className="rounded-full border border-cyan/20 bg-cyan/[0.04] px-3 py-1 font-mono text-[0.68rem] uppercase tracking-[0.12em] text-cyan">

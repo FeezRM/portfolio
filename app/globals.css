@@ -121,9 +121,14 @@ body > * {
   isolation: isolate;
   overflow: hidden;
   scroll-margin-top: 7rem;
-  background:
-    linear-gradient(90deg, rgba(34, 211, 238, 0.08), transparent 24%, transparent 72%, rgba(74, 222, 128, 0.068)),
-    linear-gradient(180deg, transparent 0%, rgba(4, 7, 13, 0.42) 14%, rgba(8, 13, 21, 0.92) 48%, rgba(4, 7, 13, 0.44) 86%, transparent 100%);
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(4, 7, 13, 0.16) 18%,
+    rgba(8, 13, 21, 0.72) 50%,
+    rgba(4, 7, 13, 0.16) 82%,
+    transparent 100%
+  );
 }
 
 .stealth-section::before,
@@ -147,9 +152,12 @@ body > * {
 .stealth-section::after {
   z-index: -1;
   background:
+    linear-gradient(90deg, rgba(34, 211, 238, 0.08), transparent 24%, transparent 72%, rgba(74, 222, 128, 0.068)),
     linear-gradient(115deg, transparent 0 46%, rgba(34, 211, 238, 0.085) 50%, transparent 56%),
     radial-gradient(ellipse at 70% 48%, rgba(74, 222, 128, 0.16), transparent 36rem),
     radial-gradient(ellipse at 76% 46%, rgba(34, 211, 238, 0.12), transparent 32rem);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
   opacity: 0.86;
 }
 
@@ -196,6 +204,72 @@ body > * {
   font-size: 0.68rem;
   letter-spacing: 0.08em;
   padding: 0.45rem 0.72rem;
+}
+
+.stealth-title-effect {
+  position: relative;
+  display: inline-block;
+  isolation: isolate;
+  color: var(--text-primary);
+  text-shadow:
+    0 0 34px rgba(34, 211, 238, 0.12),
+    0 0 58px rgba(74, 222, 128, 0.08);
+}
+
+.stealth-title-effect::before,
+.stealth-title-effect::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+}
+
+.stealth-title-effect::before {
+  content: attr(data-text);
+  inset: 0;
+  z-index: -1;
+  color: rgba(34, 211, 238, 0.62);
+  opacity: 0.3;
+  clip-path: polygon(0 35%, 100% 29%, 100% 56%, 0 63%);
+  text-shadow: 0 0 22px rgba(34, 211, 238, 0.38);
+  transform: translate3d(-0.055em, 0.025em, 0);
+  animation: stealth-title-glitch 6.6s steps(1, end) infinite;
+}
+
+.stealth-title-effect::after {
+  left: -20%;
+  top: 0.08em;
+  bottom: 0.06em;
+  z-index: 2;
+  width: 44%;
+  border: 1px solid rgba(34, 211, 238, 0.32);
+  background:
+    linear-gradient(90deg, rgba(7, 11, 18, 0.08), rgba(34, 211, 238, 0.34), rgba(74, 222, 128, 0.25), rgba(7, 11, 18, 0.1)),
+    repeating-linear-gradient(90deg, rgba(241, 245, 249, 0.18) 0 0.14rem, transparent 0.14rem 0.48rem),
+    repeating-linear-gradient(0deg, rgba(241, 245, 249, 0.13) 0 1px, transparent 1px 0.46rem);
+  box-shadow:
+    0 0 24px rgba(34, 211, 238, 0.24),
+    inset 0 0 18px rgba(7, 11, 18, 0.72);
+  clip-path: polygon(0 13%, 100% 0, 100% 78%, 0 94%);
+  opacity: 0.44;
+  mix-blend-mode: screen;
+  transform: translateX(0);
+  animation: stealth-title-censor 6.6s steps(18, end) infinite;
+}
+
+.stealth-title-effect:hover::before,
+.stealth-title-effect:focus-visible::before,
+.stealth-command:focus-within .stealth-title-effect::before {
+  opacity: 0.54;
+}
+
+.stealth-title-effect:hover::after,
+.stealth-title-effect:focus-visible::after,
+.stealth-command:focus-within .stealth-title-effect::after {
+  animation-duration: 2.5s;
+  border-color: rgba(74, 222, 128, 0.48);
+  box-shadow:
+    0 0 32px rgba(74, 222, 128, 0.24),
+    inset 0 0 20px rgba(7, 11, 18, 0.78);
 }
 
 .stealth-vault {
@@ -534,6 +608,47 @@ body > * {
   82% {
     opacity: 0;
     transform: translateY(27rem);
+  }
+}
+
+@keyframes stealth-title-censor {
+  0%,
+  100% {
+    opacity: 0.44;
+    transform: translateX(250%);
+  }
+
+  1% {
+    opacity: 0.46;
+    transform: translateX(0);
+  }
+
+  18% {
+    opacity: 0.86;
+  }
+
+  56% {
+    opacity: 0.76;
+    transform: translateX(132%);
+  }
+}
+
+@keyframes stealth-title-glitch {
+  0%,
+  32%,
+  100% {
+    opacity: 0.22;
+    transform: translate3d(-0.055em, 0.025em, 0);
+  }
+
+  34% {
+    opacity: 0.48;
+    transform: translate3d(0.04em, -0.02em, 0);
+  }
+
+  36% {
+    opacity: 0.32;
+    transform: translate3d(-0.02em, 0.04em, 0);
   }
 }
 

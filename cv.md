@@ -44,7 +44,7 @@ _Coursework:_ Data Structures & Algorithms · Database Systems · Computer Archi
 - Engineered an end-to-end agentic AI pipeline: word-level transcription → audio-based scene/silence detection → LLM-driven edit decision list (EDL) generation → ffmpeg rendering with captions and b-roll injection.
 - Empirically calibrated a confidence-gate rendering system (threshold: 0.85 via holdout evaluation) that filters low-quality AI-generated cuts before final output — automated quality control for agentic AI decisions without per-clip human review.
 
-**LLM-Powered Research Agent** · Python · Claude API · Notion API · Web Automation · March – April 2026
+**IG Research Agent** · Python · Claude API · Notion API · Web Automation · [GitHub](https://github.com/FeezRM/ig-competitor-research) · March – April 2026
 
 - Engineered an LLM research agent with deterministic guardrails, JSON output schemas, skip criteria, and classification logic to convert unstructured social data into normalized database records across 100+ profiles and 7 niches — with consistent, auditable outputs across repeated runs.
 - Designed a multi-source discovery workflow (seed-account mining → targeted search → profile-level validation) that reduced manual cleanup by 80%+ through systematic deduplication and structured reporting.
@@ -54,7 +54,7 @@ _Coursework:_ Data Structures & Algorithms · Database Systems · Computer Archi
 - Built end-to-end LLM pipeline for competitor intelligence: transcript ingestion → AI video analysis → content gap detection → script generation, serving 6+ creator workflows in a 10-user private beta.
 - Architected FastAPI microservices and a typed Next.js frontend with Supabase Auth, PostgreSQL-backed niche management, and structured AI-generated insight feeds.
 
-**SoulSync** — Conversational AI · Python · Flask · React · AWS Polly · S3 · Apr – Sept 2025
+**SoulSync** — Conversational AI · Python · Flask · React · AWS Polly · S3 · [GitHub](https://github.com/FeezRM/SoulSync) · Apr – Sept 2025
 
 - Architected a real-time multi-modal LLM platform integrating TTS (AWS Polly) and async Flask APIs; reduced end-to-end response latency to <2.3s through request pipelining and optimized API orchestration.
 - Scaled to 10+ concurrent sessions under load testing via token auth, request queuing, and fault-tolerant service integration with zero dropped sessions.

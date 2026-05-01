@@ -43,27 +43,27 @@ export const projects: Project[] = [
     description:
       "A real-time LLM platform integrating async Flask APIs, AWS Polly, S3, and a React frontend. Request pipelining and service orchestration brought response latency below conversational thresholds.",
     impact: "<2.3s response latency | 10+ concurrent sessions",
-    tags: ["Python", "Flask", "React", "AWS Polly", "S3", "LLM APIs"]
+    tags: ["Python", "Flask", "React", "AWS Polly", "S3", "LLM APIs"],
+    githubUrl: "https://github.com/FeezRM/SoulSync"
   },
   {
     id: "research-agent",
-    title: "LLM Research Agent",
+    title: "IG Research Agent",
     category: "AI Agents + Automation",
     summary: "Structured research automation with deterministic guardrails.",
     description:
       "A multi-source discovery workflow that converts noisy social data into normalized records with JSON schemas, skip criteria, classification logic, and auditable outputs across repeated runs.",
     impact: "80% manual cleanup reduction | 100+ profiles",
-    tags: ["Python", "Claude API", "Notion API", "Automation", "JSON schemas"]
+    tags: ["Python", "Claude API", "Notion API", "Automation", "JSON schemas"],
+    githubUrl: "https://github.com/FeezRM/ig-competitor-research"
   }
 ];
 
 export const stealthProject: StealthProject = {
   id: "stealth-startup",
-  title: "Stealth AI Startup",
+  title: "AI Startup",
   category: "Creator Intelligence",
   summary: "Private beta product for creator workflows.",
-  description:
-    "A currently private platform that turns long-form signals into structured ideation, competitor research, and draftable creator workflows. Details stay intentionally quiet while it is being built.",
   impact: "Private beta | 6+ creator workflows",
   teaser: "AI content intelligence for creators and online business owners.",
   tags: ["Next.js", "FastAPI", "Python", "Supabase", "LLM pipelines"],

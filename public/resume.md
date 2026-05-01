@@ -14,8 +14,8 @@ Computer Science Honours Co-op student at Ontario Tech University with a 3.78 GP
 
 - FocusFlow: real-time computer vision attention monitor with a 50+ participant study and roughly 50% reduction in distracted time.
 - AI Short-Form Video Editor: agentic edit pipeline with transcription, scene detection, edit decision generation, captions, and confidence-gated rendering.
-- LLM Research Agent: structured research automation that reduced manual cleanup by 80%+ across 100+ profiles.
-- SoulSync: conversational AI platform with sub-2.3 second response latency and 10+ concurrent sessions.
+- IG Research Agent: structured research automation that reduced manual cleanup by 80%+ across 100+ profiles. https://github.com/FeezRM/ig-competitor-research
+- SoulSync: conversational AI platform with sub-2.3 second response latency and 10+ concurrent sessions. https://github.com/FeezRM/SoulSync
 
 ## Experience
 

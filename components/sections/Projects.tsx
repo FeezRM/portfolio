@@ -12,9 +12,9 @@ export function Projects() {
           description="A focused set of AI and software projects with clear engineering depth, measurable outcomes, and production-minded tradeoffs."
         />
 
-        <div className="grid gap-4 lg:grid-cols-12">
-          {projects.map((project, index) => (
-            <ProjectCard key={project.id} project={project} featured={index < 2} />
+        <div className="grid gap-4 md:grid-cols-2">
+          {projects.map((project) => (
+            <ProjectCard key={project.id} project={project} />
           ))}
         </div>
       </div>

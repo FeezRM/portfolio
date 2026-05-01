@@ -179,15 +179,15 @@ export interface SocialLink {
 |---|-------|----------|-----------|--------|
 | 1 | FocusFlow | Computer Vision + AI | 50% distraction reduction · 50+ participant study | github.com/FeezRM/FocusFlow |
 | 2 | AI Short-Form Video Editor | Agentic AI + Creator Tools | Fully agentic edit pipeline · 0.85 confidence gate | github.com/FeezRM/AI-ShortForm-Editor |
-| 3 | SoulSync | Voice AI + Full-Stack | <2.3s latency · 10+ concurrent sessions | (no public repo) |
+| 3 | SoulSync | Voice AI + Full-Stack | <2.3s latency · 10+ concurrent sessions | github.com/FeezRM/SoulSync |
 | 4 | AI Interview Prep App | LLM Evaluation | Calibrated scoring rubric · 10+ tracked users | (no public repo) |
-| 5 | LLM Research Agent | AI Agents + Automation | 80% manual cleanup reduction · 100+ profiles | (no public repo) |
+| 5 | IG Research Agent | AI Agents + Automation | 80% manual cleanup reduction · 100+ profiles | github.com/FeezRM/ig-competitor-research |
 | 6 | ContentSpy (STEALTH) | Stealth Startup | — | hidden |
 
 **Stealth card fields:**
 - `mosaicTitle`: `"C▉nt▉ntS▉y"`
 - `teaser`: `"An AI content intelligence platform for creators and online business owners."`
-- Card label: `"Stealth AI Startup"` with small text `"Currently Building"`
+- Card label: `"AI Startup"` with small text `"Currently Building"`
 
 ### Skills (4 groups)
 

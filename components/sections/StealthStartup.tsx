@@ -22,17 +22,16 @@ export function StealthStartup() {
 
             <h2
               id="stealth-title"
+              aria-label={stealthProject.title}
               className="font-display text-4xl font-semibold leading-[0.98] text-primary sm:text-5xl md:text-6xl"
             >
-              {stealthProject.title}
-              <span className="block gradient-text">kept behind the glass.</span>
+              <span aria-hidden="true" className="stealth-title-effect" data-text={stealthProject.title}>
+                {stealthProject.title}
+              </span>
             </h2>
 
             <p className="mt-7 max-w-xl text-lg leading-8 text-slate-300 md:text-xl md:leading-9">
               {stealthProject.teaser}
-            </p>
-            <p className="mt-5 max-w-xl text-sm leading-7 text-muted md:text-base md:leading-8">
-              {stealthProject.description}
             </p>
 
             <div className="mt-9 grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
