@@ -1,3 +1,4 @@
+import { MotionReveal } from "@/components/effects/MotionReveal";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { SkillPill } from "@/components/ui/SkillPill";
 import { skillGroups } from "@/lib/data";
@@ -21,18 +22,24 @@ export function Skills() {
         />
 
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {skillGroups.map((group) => (
-            <article key={group.label} className="glass-panel rounded-3xl p-6 md:p-7">
+          {skillGroups.map((group, groupIndex) => (
+            <MotionReveal
+              key={group.label}
+              as="article"
+              className="skill-cluster glass-panel rounded-3xl p-6 md:p-7"
+              delay={groupIndex * 80}
+              variant="scale-in"
+            >
               <div className="mb-6 flex items-center justify-between">
                 <h3 className="font-display text-xl font-semibold text-primary">{group.label}</h3>
-                <span className={`h-2 w-2 rounded-full ${dotClassNames[group.color]}`} aria-hidden="true" />
+                <span className={`skill-cluster-dot h-2 w-2 rounded-full ${dotClassNames[group.color]}`} aria-hidden="true" />
               </div>
               <div className="flex flex-wrap gap-2.5">
-                {group.skills.map((skill) => (
-                  <SkillPill key={skill} skill={skill} color={group.color} />
+                {group.skills.map((skill, skillIndex) => (
+                  <SkillPill key={skill} skill={skill} color={group.color} index={skillIndex} />
                 ))}
               </div>
-            </article>
+            </MotionReveal>
           ))}
         </div>
       </div>

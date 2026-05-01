@@ -23,7 +23,7 @@ export function GlowButton({
 
   return (
     <a
-      className={`inline-flex min-h-12 items-center justify-center rounded-full border px-5 py-3 font-mono text-[0.72rem] font-semibold uppercase tracking-[0.16em] transition duration-200 ${variantClassNames[variant]} ${className}`}
+      className={`glow-button inline-flex min-h-12 items-center justify-center rounded-full border px-5 py-3 font-mono text-[0.72rem] font-semibold uppercase tracking-[0.16em] transition duration-200 ${variantClassNames[variant]} ${className}`}
       href={href}
       rel={isExternal ? "noreferrer" : undefined}
       target={isExternal ? "_blank" : undefined}

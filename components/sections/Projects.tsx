@@ -1,6 +1,9 @@
+import { MotionReveal } from "@/components/effects/MotionReveal";
 import { ProjectCard } from "@/components/ui/ProjectCard";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { projects } from "@/lib/data";
+
+const projectDelays = [90, 10, 180, 70];
 
 export function Projects() {
   return (
@@ -13,8 +16,15 @@ export function Projects() {
         />
 
         <div className="grid gap-4 md:grid-cols-2">
-          {projects.map((project) => (
-            <ProjectCard key={project.id} project={project} />
+          {projects.map((project, index) => (
+            <MotionReveal
+              key={project.id}
+              className="h-full"
+              delay={projectDelays[index % projectDelays.length]}
+              variant={index % 2 === 0 ? "cluster-left" : "cluster-right"}
+            >
+              <ProjectCard project={project} />
+            </MotionReveal>
           ))}
         </div>
       </div>

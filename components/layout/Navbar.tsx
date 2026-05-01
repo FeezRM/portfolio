@@ -1,5 +1,5 @@
 const navItems = [
-  { label: "Stealth", href: "#stealth" },
+  { label: "Startup", href: "#stealth" },
   { label: "Work", href: "#projects" },
   { label: "Skills", href: "#skills" },
   { label: "Experience", href: "#experience" },
@@ -8,7 +8,7 @@ const navItems = [
 
 export function Navbar() {
   return (
-    <header className="fixed inset-x-0 top-0 z-50 px-4 pt-4 md:px-6">
+    <header className="site-nav-shell fixed inset-x-0 top-0 z-50 px-4 pt-4 md:px-6">
       <nav
         aria-label="Primary navigation"
         className="mx-auto flex max-w-6xl items-center justify-between rounded-full border border-white/10 bg-bg/90 px-4 py-3 shadow-panel md:px-5"

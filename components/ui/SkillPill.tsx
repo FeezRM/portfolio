@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import type { Accent } from "@/lib/types";
 
 const colorClassNames: Record<Accent, string> = {
@@ -7,10 +8,11 @@ const colorClassNames: Record<Accent, string> = {
   violet: "border-violet-300/20 bg-violet-300/[0.05] text-violet-200"
 };
 
-export function SkillPill({ skill, color }: { skill: string; color: Accent }) {
+export function SkillPill({ skill, color, index = 0 }: { skill: string; color: Accent; index?: number }) {
   return (
     <span
-      className={`inline-flex rounded-full border px-3 py-1.5 font-mono text-[0.72rem] font-medium uppercase tracking-[0.08em] ${colorClassNames[color]}`}
+      className={`skill-pill inline-flex rounded-full border px-3 py-1.5 font-mono text-[0.72rem] font-medium uppercase tracking-[0.08em] ${colorClassNames[color]}`}
+      style={{ "--pill-index": index } as CSSProperties}
     >
       {skill}
     </span>

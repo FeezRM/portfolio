@@ -1,3 +1,4 @@
+import { MotionReveal } from "@/components/effects/MotionReveal";
 import { stealthProject } from "@/lib/data";
 
 const stealthMetrics = [
@@ -18,41 +19,61 @@ export function StealthStartup() {
       <div className="container-page relative z-10">
         <div className="stealth-command grid gap-14 lg:grid-cols-12 lg:items-center">
           <div className="lg:col-span-5">
-            <p className="eyebrow mb-6">Currently Building</p>
+            <MotionReveal as="p" className="eyebrow mb-6" delay={80} variant="scale-in">
+              Currently Building
+            </MotionReveal>
 
-            <h2
-              id="stealth-title"
-              aria-label={stealthProject.title}
-              className="font-display text-4xl font-semibold leading-[0.98] text-primary sm:text-5xl md:text-6xl"
+            <MotionReveal variant="clip-scan" delay={180}>
+              <h2
+                id="stealth-title"
+                aria-label={stealthProject.title}
+                className="font-display text-4xl font-semibold leading-[0.98] text-primary sm:text-5xl md:text-6xl"
+              >
+                <span aria-hidden="true" className="stealth-title-effect" data-text={stealthProject.title}>
+                  {stealthProject.title}
+                </span>
+              </h2>
+            </MotionReveal>
+
+            <MotionReveal
+              as="p"
+              className="mt-7 max-w-xl text-lg leading-8 text-slate-300 md:text-xl md:leading-9"
+              delay={300}
             >
-              <span aria-hidden="true" className="stealth-title-effect" data-text={stealthProject.title}>
-                {stealthProject.title}
-              </span>
-            </h2>
-
-            <p className="mt-7 max-w-xl text-lg leading-8 text-slate-300 md:text-xl md:leading-9">
               {stealthProject.teaser}
-            </p>
+            </MotionReveal>
 
             <div className="mt-9 grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
-              {stealthMetrics.map((metric) => (
-                <div key={metric.label} className="stealth-metric">
+              {stealthMetrics.map((metric, index) => (
+                <MotionReveal
+                  key={metric.label}
+                  as="div"
+                  className="stealth-metric"
+                  delay={420 + index * 90}
+                  variant="cluster-left"
+                >
                   <span>{metric.label}</span>
                   <strong>{metric.value}</strong>
-                </div>
+                </MotionReveal>
               ))}
             </div>
 
             <div className="mt-7 flex flex-wrap gap-2" aria-label="Stealth startup technology stack">
-              {stealthProject.tags.map((tag) => (
-                <span key={tag} className="stealth-tag">
+              {stealthProject.tags.map((tag, index) => (
+                <MotionReveal
+                  key={tag}
+                  as="span"
+                  className="stealth-tag"
+                  delay={620 + index * 55}
+                  variant="scale-in"
+                >
                   {tag}
-                </span>
+                </MotionReveal>
               ))}
             </div>
           </div>
 
-          <div className="lg:col-span-7">
+          <MotionReveal className="stealth-vault-reveal lg:col-span-7" delay={260} variant="scale-in">
             <div
               className="stealth-vault"
               tabIndex={0}
@@ -74,13 +95,19 @@ export function StealthStartup() {
             </div>
 
             <div className="stealth-stage-list" aria-label="Private beta workflow stages">
-              {stealthStages.map((stage) => (
-                <span key={stage} className="stealth-stage-chip">
+              {stealthStages.map((stage, index) => (
+                <MotionReveal
+                  key={stage}
+                  as="span"
+                  className="stealth-stage-chip"
+                  delay={650 + index * 85}
+                  variant="scale-in"
+                >
                   {stage}
-                </span>
+                </MotionReveal>
               ))}
             </div>
-          </div>
+          </MotionReveal>
         </div>
       </div>
     </section>

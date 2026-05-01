@@ -1,3 +1,4 @@
+import { MotionReveal } from "@/components/effects/MotionReveal";
 import { GlowButton } from "@/components/ui/GlowButton";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { socialLinks } from "@/lib/data";
@@ -6,7 +7,10 @@ export function Contact() {
   return (
     <section id="contact" className="px-6 py-24 md:py-32">
       <div className="container-page">
-        <div className="glass-panel relative overflow-hidden rounded-[2rem] p-8 text-center md:p-14">
+        <MotionReveal
+          className="contact-signal glass-panel relative overflow-hidden rounded-[2rem] p-8 text-center md:p-14"
+          variant="scale-in"
+        >
           <div className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-cyan/50 to-transparent" aria-hidden="true" />
           <SectionHeading
             label="Contact"
@@ -35,7 +39,7 @@ export function Contact() {
               );
             })}
           </div>
-        </div>
+        </MotionReveal>
       </div>
     </section>
   );

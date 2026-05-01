@@ -3,7 +3,7 @@ import type { Project } from "@/lib/types";
 export function ProjectCard({ project }: { project: Project }) {
   return (
     <article
-      className="glass-panel group flex min-h-full flex-col rounded-3xl p-6 transition duration-200 hover:-translate-y-1 hover:border-cyan/30 hover:shadow-glow md:p-7"
+      className="project-card glass-panel group relative flex min-h-full flex-col overflow-hidden rounded-3xl p-6 transition duration-200 hover:-translate-y-1 hover:border-cyan/30 hover:shadow-glow md:p-7"
     >
       <div className="mb-7 flex items-center justify-between gap-4">
         <p className="rounded-full border border-cyan/20 bg-cyan/[0.04] px-3 py-1 font-mono text-[0.68rem] uppercase tracking-[0.12em] text-cyan">
@@ -19,7 +19,7 @@ export function ProjectCard({ project }: { project: Project }) {
         <p className="mt-4 text-sm leading-7 text-muted">{project.description}</p>
       </div>
 
-      <p className="mt-6 rounded-2xl border border-white/10 bg-white/[0.025] px-4 py-3 font-mono text-[0.72rem] uppercase tracking-[0.1em] text-slate-300">
+      <p className="project-impact mt-6 rounded-2xl border border-white/10 bg-white/[0.025] px-4 py-3 font-mono text-[0.72rem] uppercase tracking-[0.1em] text-slate-300">
         {project.impact}
       </p>
 

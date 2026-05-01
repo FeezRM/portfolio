@@ -14,7 +14,12 @@ export function ExperienceSection() {
 
         <div className="mx-auto max-w-5xl">
           {experience.map((item, index) => (
-            <TimelineItem key={item.id} item={item} isLast={index === experience.length - 1} />
+            <TimelineItem
+              key={item.id}
+              item={item}
+              index={index}
+              isLast={index === experience.length - 1}
+            />
           ))}
         </div>
       </div>
