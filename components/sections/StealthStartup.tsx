@@ -1,4 +1,8 @@
+'use client';
+
+import { useState } from 'react';
 import { MotionReveal } from "@/components/effects/MotionReveal";
+import LetterGlitch from "@/components/effects/LetterGlitch";
 import { stealthProject } from "@/lib/data";
 
 const stealthMetrics = [
@@ -10,6 +14,8 @@ const stealthMetrics = [
 const stealthStages = ["Signal intake", "Competitor map", "Idea engine", "Draftable workflows"];
 
 export function StealthStartup() {
+  const [isHovered, setIsHovered] = useState(false);
+
   return (
     <section
       id="stealth"
@@ -78,9 +84,26 @@ export function StealthStartup() {
               className="stealth-vault"
               tabIndex={0}
               aria-label="Stealth startup preview. Details private."
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
+              onFocus={() => setIsHovered(true)}
+              onBlur={() => setIsHovered(false)}
             >
               <div className="stealth-vault-mark" aria-hidden="true">
-                <span className="stealth-question">?</span>
+                <div className="stealth-glitch-bg" style={{ opacity: isHovered ? 0.55 : 0.18 }}>
+                  <LetterGlitch
+                    glitchColors={['#0a1628', '#22d3ee', '#4ade80']}
+                    glitchSpeed={60}
+                    centerVignette={false}
+                    outerVignette={false}
+                    smooth={true}
+                    characters="ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$&*()-_+=/[]{};:<>.,0123456789"
+                    className="relative w-full h-full"
+                  />
+                </div>
+                <span className={`stealth-question${isHovered ? ' is-hovered' : ''}`}>
+                  {isHovered ? 'shhh...' : '?'}
+                </span>
                 <div className="stealth-vault-mosaic">
                   {stealthProject.mosaicCells.map((cell, index) => (
                     <span
