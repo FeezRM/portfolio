@@ -1,4 +1,5 @@
 import type { Project } from "@/lib/types";
+import { TechTag } from "@/lib/techIcons";
 
 export function ProjectCard({ project }: { project: Project }) {
   return (
@@ -26,7 +27,7 @@ export function ProjectCard({ project }: { project: Project }) {
       <div className="mt-5 flex flex-wrap gap-2">
         {project.tags.map((tag) => (
           <span key={tag} className="rounded-full border border-white/10 px-3 py-1 font-mono text-[0.68rem] uppercase tracking-[0.08em] text-muted">
-            {tag}
+            <TechTag tag={tag} />
           </span>
         ))}
       </div>

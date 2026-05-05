@@ -1,15 +1,15 @@
+'use client';
+
+import { useState } from 'react';
 import { MotionReveal } from "@/components/effects/MotionReveal";
 import { stealthProject } from "@/lib/data";
+import LetterGlitch from "@/components/effects/LetterGlitch";
 
-const stealthMetrics = [
-  { label: "State", value: "Private beta" },
-  { label: "Reach", value: "6+ creator workflows" },
-  { label: "Mode", value: "Creator intelligence" }
-];
-
-const stealthStages = ["Signal intake", "Competitor map", "Idea engine", "Draftable workflows"];
+const stealthTitle = "startup launching soon...";
 
 export function StealthStartup() {
+  const [isHovered, setIsHovered] = useState(false);
+
   return (
     <section
       id="stealth"
@@ -17,95 +17,55 @@ export function StealthStartup() {
       className="stealth-section px-6 py-20 md:py-24"
     >
       <div className="container-page relative z-10">
-        <div className="stealth-command grid gap-14 lg:grid-cols-12 lg:items-center">
-          <div className="lg:col-span-5">
-            <MotionReveal as="p" className="eyebrow mb-6" delay={80} variant="scale-in">
-              Currently Building
-            </MotionReveal>
-
-            <MotionReveal variant="clip-scan" delay={180}>
-              <h2
-                id="stealth-title"
-                aria-label={stealthProject.title}
-                className="font-display text-4xl font-semibold leading-[0.98] text-primary sm:text-5xl md:text-6xl"
-              >
-                <span aria-hidden="true" className="stealth-title-effect" data-text={stealthProject.title}>
-                  {stealthProject.title}
-                </span>
-              </h2>
-            </MotionReveal>
-
-            <MotionReveal
-              as="p"
-              className="mt-7 max-w-xl text-lg leading-8 text-slate-300 md:text-xl md:leading-9"
-              delay={300}
+        <div className="stealth-command mx-auto flex max-w-3xl flex-col items-center gap-10 text-center">
+          <MotionReveal variant="clip-scan" delay={120}>
+            <h2
+              id="stealth-title"
+              aria-label={stealthTitle}
+              className="font-display text-4xl font-semibold leading-[0.98] text-primary sm:text-5xl md:text-6xl"
             >
-              {stealthProject.teaser}
-            </MotionReveal>
+              <span aria-hidden="true" className="stealth-title-effect" data-text={stealthTitle}>
+                {stealthTitle}
+              </span>
+            </h2>
+          </MotionReveal>
 
-            <div className="mt-9 grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
-              {stealthMetrics.map((metric, index) => (
-                <MotionReveal
-                  key={metric.label}
-                  as="div"
-                  className="stealth-metric"
-                  delay={420 + index * 90}
-                  variant="cluster-left"
-                >
-                  <span>{metric.label}</span>
-                  <strong>{metric.value}</strong>
-                </MotionReveal>
-              ))}
-            </div>
-
-            <div className="mt-7 flex flex-wrap gap-2" aria-label="Stealth startup technology stack">
-              {stealthProject.tags.map((tag, index) => (
-                <MotionReveal
-                  key={tag}
-                  as="span"
-                  className="stealth-tag"
-                  delay={620 + index * 55}
-                  variant="scale-in"
-                >
-                  {tag}
-                </MotionReveal>
-              ))}
-            </div>
-          </div>
-
-          <MotionReveal className="stealth-vault-reveal lg:col-span-7" delay={260} variant="scale-in">
+          <MotionReveal className="stealth-vault-reveal w-full" delay={220} variant="scale-in">
             <div
               className="stealth-vault"
               tabIndex={0}
-              aria-label="Stealth startup preview. Details private."
+              aria-label="Launching soon preview."
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
+              onFocus={() => setIsHovered(true)}
+              onBlur={() => setIsHovered(false)}
             >
               <div className="stealth-vault-mark" aria-hidden="true">
-                <span className="stealth-question">?</span>
-                <div className="stealth-vault-mosaic">
-                  {stealthProject.mosaicCells.map((cell, index) => (
-                    <span
-                      key={`${cell}-${index}`}
-                      className={cell ? "stealth-vault-letter" : "stealth-vault-block"}
-                    >
-                      {cell}
-                    </span>
-                  ))}
+                <div className="stealth-glitch-bg" style={{ opacity: isHovered ? 0.55 : 0.18 }}>
+                  <LetterGlitch
+                    glitchColors={['#0a1628', '#22d3ee', '#4ade80']}
+                    glitchSpeed={60}
+                    centerVignette={false}
+                    outerVignette={false}
+                    smooth={true}
+                    characters="ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$&*()-_+=/[]{};:<>.,0123456789"
+                    className="relative w-full h-full"
+                  />
                 </div>
+                <span className="stealth-question">{isHovered ? '' : '?'}</span>
+                {!isHovered && (
+                  <div className="stealth-vault-mosaic">
+                    {stealthProject.mosaicCells.map((cell, index) => (
+                      <span
+                        key={`${cell}-${index}`}
+                        className={cell ? "stealth-vault-letter" : "stealth-vault-block"}
+                      >
+                        {cell}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
-            </div>
-
-            <div className="stealth-stage-list" aria-label="Private beta workflow stages">
-              {stealthStages.map((stage, index) => (
-                <MotionReveal
-                  key={stage}
-                  as="span"
-                  className="stealth-stage-chip"
-                  delay={650 + index * 85}
-                  variant="scale-in"
-                >
-                  {stage}
-                </MotionReveal>
-              ))}
             </div>
           </MotionReveal>
         </div>

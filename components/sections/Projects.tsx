@@ -12,7 +12,7 @@ export function Projects() {
         <SectionHeading
           label="Selected Work"
           title="Strong signals, fewer cards."
-          description="A focused set of AI and software projects with clear engineering depth, measurable outcomes, and production-minded tradeoffs."
+          description="A focused set of AI and software projects."
         />
 
         <div className="grid gap-4 md:grid-cols-2">

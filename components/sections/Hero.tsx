@@ -19,23 +19,23 @@ export function Hero() {
 
           <MotionReveal
             as="h1"
-            className="mt-8 font-display text-5xl font-semibold leading-[0.98] text-primary sm:text-6xl md:text-7xl"
+            className="mt-8 font-display text-5xl font-semibold leading-[0.98] text-primary hero-text-shadow sm:text-6xl md:text-7xl"
             variant="clip-scan"
             delay={260}
           >
             <DecryptText
               delay={340}
-              highlight="AI-powered"
-              text={"Hi, I'm Faiz.\nI build AI-powered software."}
+              highlight="Solve Problems"
+              text={"Hi, I'm Faiz.\nI Solve Problems Using Software."}
             />
           </MotionReveal>
 
           <MotionReveal
             as="p"
-            className="mt-7 max-w-2xl text-lg leading-8 text-muted md:text-xl md:leading-9"
+            className="mt-7 max-w-2xl text-lg leading-8 text-muted hero-text-shadow-sm md:text-xl md:leading-9"
             delay={1180}
           >
-            I&apos;m focused on building cool shit that actually does shit.
+            I use AI and software to solve real-world problems
           </MotionReveal>
 
           <MotionReveal as="div" className="mt-9 flex flex-col gap-3 sm:flex-row" delay={1350}>
