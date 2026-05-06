@@ -27,7 +27,7 @@ const speeds      = [52, 46, 58, 42, 62, 50];
 
 export function Skills() {
   return (
-    <section id="skills" className="section-spacing px-6">
+    <section id="skills" className="section-spacing px-4 sm:px-6">
       <div className="container-page">
         <SectionHeading
           label="Stack"
@@ -52,7 +52,7 @@ export function Skills() {
             return (
               <MotionReveal key={group.label} delay={i * 70} variant="scale-in">
                 <div className="glass-panel rounded-2xl flex items-stretch overflow-hidden">
-                  <div className="flex items-center gap-3 px-5 py-4 min-w-[132px] flex-shrink-0 border-r border-white/[0.06]">
+                  <div className="flex items-center gap-2 px-3 py-4 min-w-[108px] flex-shrink-0 border-r border-white/[0.06] sm:gap-3 sm:px-5 sm:min-w-[132px]">
                     <span
                       className={`h-2 w-2 rounded-full flex-shrink-0 ${dotClassNames[group.color]}`}
                       aria-hidden="true"

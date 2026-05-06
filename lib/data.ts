@@ -19,7 +19,7 @@ export const projects: Project[] = [
     category: "Computer Vision + AI",
     summary: "Real-time attention monitoring with measurable behavioral impact.",
     description:
-      "A calibrated computer vision pipeline using MediaPipe facial landmarks, FastAPI, React, and Electron. The system adapts to each user with a short baseline phase and triggers interventions only after sustained focus drift.",
+      "Built a personalized computer vision pipeline with MediaPipe and Electron that calibrates to each user's baseline and triggers interventions only after sustained drift — proven to cut distractions by 50% across a 50-participant study.",
     impact: "50% distraction reduction | 50+ participant study",
     tags: ["Python", "FastAPI", "React", "Electron", "OpenCV", "MediaPipe"],
     githubUrl: "https://github.com/FeezRM/FocusFlow"
@@ -30,7 +30,7 @@ export const projects: Project[] = [
     category: "Agentic AI + Creator Tools",
     summary: "An agentic editing pipeline from transcript to rendered short.",
     description:
-      "An end-to-end workflow for transcription, scene detection, edit decision generation, captioning, and ffmpeg rendering. A confidence gate filters weak AI cuts before final output.",
+      "Built a fully agentic pipeline — raw footage to captioned short — covering transcription, scene detection, and ffmpeg rendering, with a confidence gate that filters weak AI cuts before output with zero manual intervention.",
     impact: "0.85 confidence gate | fully agentic edit pipeline",
     tags: ["Python", "faster-whisper", "OpenCV", "librosa", "ffmpeg", "LLM agents"],
     githubUrl: "https://github.com/FeezRM/AI-ShortForm-Editor"
@@ -41,7 +41,7 @@ export const projects: Project[] = [
     category: "Voice AI + Full-Stack",
     summary: "Low-latency conversational AI with multimodal service orchestration.",
     description:
-      "A real-time LLM platform integrating async Flask APIs, AWS Polly, S3, and a React frontend. Request pipelining and service orchestration brought response latency below conversational thresholds.",
+      "Engineered async service orchestration across Flask, AWS Polly, and S3 that brought real-time LLM voice responses under 2.3s — well within natural conversation thresholds — while sustaining 10+ concurrent sessions.",
     impact: "<2.3s response latency | 10+ concurrent sessions",
     tags: ["Python", "Flask", "React", "AWS Polly", "S3", "LLM APIs"],
     githubUrl: "https://github.com/FeezRM/SoulSync"
@@ -52,7 +52,7 @@ export const projects: Project[] = [
     category: "AI Agents + Automation",
     summary: "Structured research automation with deterministic guardrails.",
     description:
-      "A multi-source discovery workflow that converts noisy social data into normalized records with JSON schemas, skip criteria, classification logic, and auditable outputs across repeated runs.",
+      "Replaced hours of manual social research with a structured automation pipeline — JSON schemas, skip criteria, and classification logic — eliminating 80% of cleanup and producing auditable records across 100+ profiles.",
     impact: "80% manual cleanup reduction | 100+ profiles",
     tags: ["Python", "Claude API", "Notion API", "Automation", "JSON schemas"],
     githubUrl: "https://github.com/FeezRM/ig-competitor-research"

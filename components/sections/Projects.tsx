@@ -7,7 +7,7 @@ const projectDelays = [90, 10, 180, 70];
 
 export function Projects() {
   return (
-    <section id="projects" className="section-spacing px-6">
+    <section id="projects" className="section-spacing px-4 sm:px-6">
       <div className="container-page">
         <SectionHeading
           label="Selected Work"

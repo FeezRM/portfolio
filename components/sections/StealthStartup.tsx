@@ -14,7 +14,7 @@ export function StealthStartup() {
     <section
       id="stealth"
       aria-labelledby="stealth-title"
-      className="stealth-section px-6 py-20 md:py-24"
+      className="stealth-section px-4 py-20 sm:px-6 md:py-24"
     >
       <div className="container-page relative z-10">
         <div className="stealth-command mx-auto flex max-w-3xl flex-col items-center gap-10 text-center">

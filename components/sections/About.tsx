@@ -2,7 +2,7 @@ import { MotionReveal } from "@/components/effects/MotionReveal";
 
 export function About() {
   return (
-    <section id="about" className="px-6 py-0">
+    <section id="about" className="px-4 py-0 sm:px-6">
       <div className="container-page">
         <MotionReveal
           as="h2"

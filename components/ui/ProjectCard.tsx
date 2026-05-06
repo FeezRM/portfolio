@@ -4,7 +4,7 @@ import { TechTag } from "@/lib/techIcons";
 export function ProjectCard({ project }: { project: Project }) {
   return (
     <article
-      className="project-card glass-panel group relative flex min-h-full flex-col overflow-hidden rounded-3xl p-6 transition duration-200 hover:-translate-y-1 hover:border-cyan/30 hover:shadow-glow md:p-7"
+      className="project-card glass-panel group relative flex min-h-full flex-col overflow-hidden rounded-2xl p-5 transition duration-200 hover:-translate-y-1 hover:border-cyan/30 hover:shadow-glow sm:rounded-3xl sm:p-6 md:p-7"
     >
       <div className="mb-7 flex items-center justify-between gap-4">
         <p className="rounded-full border border-cyan/20 bg-cyan/[0.04] px-3 py-1 font-mono text-[0.68rem] uppercase tracking-[0.12em] text-cyan">

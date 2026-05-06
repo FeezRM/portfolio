@@ -5,10 +5,10 @@ import { socialLinks } from "@/lib/data";
 
 export function Contact() {
   return (
-    <section id="contact" className="px-6 py-24 md:py-32">
+    <section id="contact" className="px-4 py-24 sm:px-6 md:py-32">
       <div className="container-page">
         <MotionReveal
-          className="contact-signal glass-panel relative overflow-hidden rounded-[2rem] p-8 text-center md:p-14"
+          className="contact-signal glass-panel relative overflow-hidden rounded-[1.5rem] p-6 text-center sm:rounded-[2rem] sm:p-8 md:p-14"
           variant="scale-in"
         >
           <div className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-cyan/50 to-transparent" aria-hidden="true" />

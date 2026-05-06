@@ -7,7 +7,10 @@ import { socialLinks } from "@/lib/data";
 
 export function Hero() {
   return (
-    <section id="home" className="relative overflow-hidden px-6 pb-20 pt-36 md:pb-24 md:pt-44">
+    <section
+      id="home"
+      className="relative overflow-hidden px-4 pb-20 pt-[calc(7.5rem+env(safe-area-inset-top))] sm:px-6 md:pb-24 md:pt-44"
+    >
       <RadialPulse />
       <div className="hero-neural-field" aria-hidden="true" />
 
@@ -19,7 +22,7 @@ export function Hero() {
 
           <MotionReveal
             as="h1"
-            className="mt-8 font-display text-5xl font-semibold leading-[0.98] text-primary hero-text-shadow sm:text-6xl md:text-7xl"
+            className="mt-8 font-display text-[2.35rem] font-semibold leading-[1.08] text-primary hero-text-shadow sm:text-6xl sm:leading-[1.02] md:text-7xl"
             variant="clip-scan"
             delay={260}
           >
@@ -32,7 +35,7 @@ export function Hero() {
 
           <MotionReveal
             as="p"
-            className="mt-7 max-w-2xl text-lg leading-8 text-muted hero-text-shadow-sm md:text-xl md:leading-9"
+            className="mt-7 max-w-2xl text-base leading-7 text-muted hero-text-shadow-sm sm:text-lg sm:leading-8 md:text-xl md:leading-9"
             delay={1180}
           >
             I use AI and software to solve real-world problems

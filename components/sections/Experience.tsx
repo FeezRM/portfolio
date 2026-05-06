@@ -4,7 +4,7 @@ import { experience } from "@/lib/data";
 
 export function ExperienceSection() {
   return (
-    <section id="experience" className="section-spacing px-6">
+    <section id="experience" className="section-spacing px-4 sm:px-6">
       <div className="container-page">
         <SectionHeading
           label="Experience"

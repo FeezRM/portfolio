@@ -38,7 +38,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <html lang="en">
-      <body className={`${display.variable} ${body.variable} ${mono.variable} font-sans antialiased`}>
+      <body suppressHydrationWarning className={`${display.variable} ${body.variable} ${mono.variable} font-sans antialiased`}>
         <MouseGlow />
         {children}
       </body>
