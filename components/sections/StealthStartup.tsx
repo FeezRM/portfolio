@@ -2,7 +2,8 @@
 
 import { MotionReveal } from "@/components/effects/MotionReveal";
 
-const stealthTitle = "startup launching soon...";
+const stealthTitle = "contentspy launching soon...";
+const launchUrl = "https://contentspy.me";
 
 export function StealthStartup() {
   return (
@@ -26,16 +27,19 @@ export function StealthStartup() {
           </MotionReveal>
 
           <MotionReveal className="stealth-vault-reveal w-full" delay={220} variant="scale-in">
-            <div
+            <a
               className="stealth-vault"
-              tabIndex={0}
-              aria-label="Launching soon preview."
+              href={launchUrl}
+              rel="noreferrer"
+              target="_blank"
+              aria-label="Open contentspy.me in a new tab."
             >
               <div className="stealth-vault-mark" aria-hidden="true">
                 <div className="stealth-glitch-bg" />
+                <span className="stealth-spy-scan" />
                 <span className="stealth-question">?</span>
               </div>
-            </div>
+            </a>
           </MotionReveal>
         </div>
       </div>

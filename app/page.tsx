@@ -13,9 +13,9 @@ export default function Home() {
       <Navbar />
       <main>
         <Hero />
+        <StealthStartup />
         <Projects />
         <Skills />
-        <StealthStartup />
         <ExperienceSection />
         <Contact />
       </main>
