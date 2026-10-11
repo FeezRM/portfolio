@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  SiPython, SiTypescript, SiJavascript, SiOpenjdk, SiMysql, SiCplusplus, SiHtml5,
+  SiPython, SiTypescript, SiJavascript, SiMysql, SiCplusplus, SiHtml5,
   SiScikitlearn, SiOpencv, SiFfmpeg, SiOpenai, SiGoogle,
   SiLangchain, SiJson,
   SiAnthropic,

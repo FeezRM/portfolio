@@ -265,6 +265,8 @@ export const LogoLoop = React.memo<LogoLoopProps>(
             {(item as { node: React.ReactNode }).node}
           </span>
         ) : (
+          // Native img preserves caller-supplied variable dimensions and srcSet in this reusable logo strip.
+          // eslint-disable-next-line @next/next/no-img-element
           <img
             className={cx(
               'h-[var(--logoloop-logoHeight)] w-auto block object-contain',

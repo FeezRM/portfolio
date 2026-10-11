@@ -31,7 +31,7 @@ const LetterGlitch = ({
   const letters = useRef<Letter[]>([]);
   const grid = useRef({ columns: 0, rows: 0 });
   const context = useRef<CanvasRenderingContext2D | null>(null);
-  const lastGlitchTime = useRef(Date.now());
+  const lastGlitchTime = useRef(0);
   const isVisibleRef = useRef(false);
 
   const lettersAndSymbols = Array.from(characters);
@@ -152,9 +152,8 @@ const LetterGlitch = ({
     if (needsRedraw) drawLetters();
   };
 
-  const animate = () => {
+  const animate = (now: number) => {
     if (isVisibleRef.current) {
-      const now = Date.now();
       if (now - lastGlitchTime.current >= glitchSpeed) {
         updateLetters();
         drawLetters();
@@ -201,7 +200,7 @@ const LetterGlitch = ({
 
     context.current = canvas.getContext('2d');
     resizeCanvas();
-    animate();
+    animationRef.current = requestAnimationFrame(animate);
 
     let resizeTimeout: ReturnType<typeof setTimeout>;
 
@@ -210,7 +209,7 @@ const LetterGlitch = ({
       resizeTimeout = setTimeout(() => {
         cancelAnimationFrame(animationRef.current as number);
         resizeCanvas();
-        animate();
+        animationRef.current = requestAnimationFrame(animate);
       }, 100);
     };
 

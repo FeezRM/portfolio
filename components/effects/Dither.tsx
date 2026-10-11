@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable react/no-unknown-property */
 'use client';
 
-import { useRef, useEffect, useCallback, forwardRef, MutableRefObject } from 'react';
+import { useEffect, useMemo, useCallback, forwardRef } from 'react';
 import { Canvas, useThree } from '@react-three/fiber';
 import { EffectComposer, wrapEffect } from '@react-three/postprocessing';
 import { Effect } from 'postprocessing';
@@ -178,18 +177,16 @@ type Uniforms = {
 };
 
 // Pure render component — no hooks with side effects, lives inside R3F Canvas
-function DitheredWaves({ uniformsRef, colorNum, pixelSize }: {
-  uniformsRef: MutableRefObject<Uniforms>;
+function DitheredWaves({ uniforms, colorNum, pixelSize }: {
+  uniforms: Uniforms;
   colorNum: number;
   pixelSize: number;
 }) {
   const { viewport, size, gl } = useThree();
-  // Sync resolution inline — runs every time viewport changes (safe in R3F render body)
-  const dpr = gl.getPixelRatio();
-  (uniformsRef.current.resolution.value as THREE.Vector2).set(
-    Math.floor(size.width * dpr),
-    Math.floor(size.height * dpr)
-  );
+  useEffect(() => {
+    const dpr = gl.getPixelRatio();
+    (uniforms.resolution.value as THREE.Vector2).set(Math.floor(size.width * dpr), Math.floor(size.height * dpr));
+  }, [gl, size.width, size.height, uniforms]);
   return (
     <>
       <mesh scale={[viewport.width, viewport.height, 1]}>
@@ -197,7 +194,7 @@ function DitheredWaves({ uniformsRef, colorNum, pixelSize }: {
         <shaderMaterial
           vertexShader={waveVertexShader}
           fragmentShader={waveFragmentShader}
-          uniforms={uniformsRef.current}
+          uniforms={uniforms}
         />
       </mesh>
       <EffectComposer>
@@ -231,17 +228,18 @@ export default function Dither({
   mouseRadius          = 1,
 }: DitherProps) {
   // Uniforms live here — in DOM React context so all effects run reliably
-  const uniformsRef = useRef<Uniforms>({
+  const [red, green, blue] = waveColor;
+  const uniforms = useMemo<Uniforms>(() => ({
     time:                   new THREE.Uniform(0),
     resolution:             new THREE.Uniform(new THREE.Vector2(0, 0)),
     waveSpeed:              new THREE.Uniform(waveSpeed),
     waveFrequency:          new THREE.Uniform(waveFrequency),
     waveAmplitude:          new THREE.Uniform(waveAmplitude),
-    waveColor:              new THREE.Uniform(new THREE.Color(...waveColor)),
+    waveColor:              new THREE.Uniform(new THREE.Color(red, green, blue)),
     mousePos:               new THREE.Uniform(new THREE.Vector2(0, 0)),
     enableMouseInteraction: new THREE.Uniform(enableMouseInteraction ? 1 : 0),
     mouseRadius:            new THREE.Uniform(mouseRadius),
-  });
+  }), [waveSpeed, waveFrequency, waveAmplitude, red, green, blue, enableMouseInteraction, mouseRadius]);
 
   // RAF loop in DOM context — guaranteed to run regardless of R3F version
   useEffect(() => {
@@ -250,20 +248,18 @@ export default function Dither({
     const startMs = performance.now();
     const tick = () => {
       const t = (performance.now() - startMs) / 1000;
-      uniformsRef.current.time.value = t;
-      (window as any).__dt = t;
+      uniforms.time.value = t;
       rafId = requestAnimationFrame(tick);
     };
     rafId = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafId);
-  }, [disableAnimation]);
+  }, [disableAnimation, uniforms]);
 
   // Mouse in DOM context too
   const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!enableMouseInteraction) return;
-    uniformsRef.current.mousePos.value.set(e.clientX, window.innerHeight - e.clientY);
-    uniformsRef.current.enableMouseInteraction.value = 1;
-  }, [enableMouseInteraction]);
+    uniforms.mousePos.value.set(e.clientX, window.innerHeight - e.clientY);
+  }, [enableMouseInteraction, uniforms]);
 
   useEffect(() => {
     window.addEventListener('mousemove', handleMouseMove);
@@ -278,7 +274,7 @@ export default function Dither({
       gl={{ antialias: false, alpha: false }}
     >
       <DitheredWaves
-        uniformsRef={uniformsRef}
+        uniforms={uniforms}
         colorNum={colorNum}
         pixelSize={pixelSize}
       />
