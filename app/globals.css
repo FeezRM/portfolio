@@ -90,6 +90,24 @@ a {
   overflow: hidden;
   background: var(--cobalt);
 }
+/* Native cursor assets preserve the exact hotspot without a delayed DOM follower. */
+@media (hover: hover) and (pointer: fine) {
+  .experience-shell {
+    cursor: url("/cursors/blue-hour.svg") 3 3, auto;
+  }
+  .experience-shell :is(a[href], button:not(:disabled), summary, [role="button"], select, input[type="checkbox"], input[type="file"]) {
+    cursor: url("/cursors/blue-hour-link.svg") 3 3, pointer;
+  }
+  .experience-shell button:disabled {
+    cursor: not-allowed;
+  }
+  .experience-shell .world-layer canvas {
+    cursor: url("/cursors/blue-hour-reticle.svg") 18 18, crosshair;
+  }
+  .experience-shell :is(input[type="text"], input[type="email"], input:not([type]), textarea, [contenteditable="true"]) {
+    cursor: text;
+  }
+}
 .experience-background {
   position: absolute;
   inset: 0;
