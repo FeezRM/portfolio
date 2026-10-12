@@ -26,11 +26,14 @@ import { Portrait } from "./Portrait";
 import { PortfolioPanel } from "./PortfolioPanel";
 import { PersonaRadio } from "./PersonaRadio";
 import { SecretJournal } from "./SecretJournal";
+import { CreatorStudio } from "./CreatorStudio";
+import type { AlchemyTab } from "@/lib/game/alchemy";
 import {
   secrets,
   advanceSecretCode,
   restoreDiscoveries,
   addDiscovery,
+  hasGoldenJacket,
   secretStorageKey,
   type SecretId,
 } from "@/lib/game/secrets";
@@ -306,12 +309,24 @@ export function PortfolioExperience() {
       setOverlay(section);
       setProjectId(project);
       playTone("open", sound);
-      if (section && destinations.some((d) => d.id === section)) {
+      if (
+        section &&
+        (section === "alchemy" || destinations.some((d) => d.id === section))
+      ) {
         const hash = `#${section}${project ? `/${project}` : ""}`;
         if (location.hash !== hash) history.pushState(null, "", hash);
       }
     },
     [sound],
+  );
+  const handleSecret = useCallback(
+    (id: SecretId) => {
+      discover(id);
+      if (id === "alchemy-lab") open("alchemy", "studio");
+      else if (id === "creator-signal") open("alchemy", "signal");
+      else if (id === "alchemy-offer") open("alchemy", "offer");
+    },
+    [discover, open],
   );
   const close = useCallback(() => {
     setOverlay(null);
@@ -566,9 +581,11 @@ export function PortfolioExperience() {
         ? "Go somewhere."
         : overlay === "journal"
           ? "The untold stories."
-          : overlay === "settings"
-            ? "Make it yours."
-            : (destinations.find((d) => d.id === overlay)?.title ?? "");
+          : overlay === "alchemy"
+            ? "The hidden studio."
+            : overlay === "settings"
+              ? "Make it yours."
+              : (destinations.find((d) => d.id === overlay)?.title ?? "");
 
   return (
     <main
@@ -593,8 +610,8 @@ export function PortfolioExperience() {
                 onOpen={open}
                 onFailure={failure}
                 onPerformanceDrop={lowerQuality}
-                onSecret={discover}
-                golden={discovered.length === secrets.length}
+                onSecret={handleSecret}
+                golden={hasGoldenJacket(discovered)}
               />
             </WorldBoundary>
             {travel.serial > 0 && (
@@ -720,7 +737,7 @@ export function PortfolioExperience() {
               <button
                 className="interaction-prompt"
                 onClick={() => {
-                  if (target.secret) discover(target.secret);
+                  if (target.secret) handleSecret(target.secret);
                   else if (target.section) open(target.section, target.project);
                 }}
               >
@@ -830,6 +847,11 @@ export function PortfolioExperience() {
                       <button onClick={() => open("journal")}>
                         FIELD JOURNAL {discovered.length}/{secrets.length} ↗
                       </button>
+                      {discovered.includes("alchemy-lab") && (
+                        <button onClick={() => open("alchemy", "studio")}>
+                          CONTENT ALCHEMY ↗
+                        </button>
+                      )}
                     </div>
                   </div>
                   <div className="menu-portrait">
@@ -847,6 +869,21 @@ export function PortfolioExperience() {
                     <SecretJournal
                       discovered={discovered}
                       onReset={resetDiscoveries}
+                      onOpenAlchemy={(tab) => {
+                        discover("alchemy-lab");
+                        open("alchemy", tab);
+                      }}
+                    />
+                  ) : overlay === "alchemy" ? (
+                    <CreatorStudio
+                      tab={
+                        (["studio", "signal", "offer"].includes(projectId || "")
+                          ? projectId
+                          : "studio") as AlchemyTab
+                      }
+                      discovered={discovered}
+                      onDiscover={discover}
+                      onTab={(tab) => open("alchemy", tab)}
                     />
                   ) : overlay === "settings" ? (
                     <div className="settings-view">

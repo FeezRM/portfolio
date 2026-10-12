@@ -7,7 +7,14 @@ export type Section =
   | "experience"
   | "stealth"
   | "contact";
-export type Overlay = Section | "menu" | "map" | "settings" | "journal" | null;
+export type Overlay =
+  | Section
+  | "menu"
+  | "map"
+  | "settings"
+  | "journal"
+  | "alchemy"
+  | null;
 export type Point = { x: number; z: number };
 export type Obstacle = { x: number; z: number; width: number; depth: number };
 
@@ -126,6 +133,7 @@ export const obstacles: Obstacle[] = [
   ...planters.map((x) => ({ x, z: 9, width: 4, depth: 1.8 })),
   { x: -13.5, z: -8.5, width: 1.5, depth: 0.55 },
   { x: 12.5, z: 8.5, width: 1.1, depth: 0.8 },
+  { x: -16, z: 8, width: 2, depth: 0.9 },
 ];
 
 export function clamp(value: number, min: number, max: number) {
@@ -272,6 +280,13 @@ export function parseHash(hash: string): {
 } {
   const [section, project] = hash.replace(/^#\/?/, "").split("/");
   if (section === "home" || !section) return { overlay: null };
+  if (section === "alchemy")
+    return {
+      overlay: "alchemy",
+      project: ["studio", "signal", "offer"].includes(project)
+        ? project
+        : "studio",
+    };
   if (destinations.some((d) => d.id === section))
     return {
       overlay: section as Section,

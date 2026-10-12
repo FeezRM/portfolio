@@ -1,4 +1,5 @@
 "use client";
+import { AlchemyDiscoveries } from "./AlchemyDiscoveries";
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import {
@@ -93,7 +94,10 @@ function Sign({
   return (
     <mesh position={position} rotation={[0, rotation, 0]}>
       <planeGeometry args={[width, width * 0.1875]} />
-      <meshBasicMaterial map={texture} side={twoSided ? THREE.DoubleSide : THREE.FrontSide} />
+      <meshBasicMaterial
+        map={texture}
+        side={twoSided ? THREE.DoubleSide : THREE.FrontSide}
+      />
     </mesh>
   );
 }
@@ -861,6 +865,18 @@ function Scene(props: WorldProps) {
         onDiscover={props.onSecret}
         reducedMotion={props.reducedMotion}
       />
+      <AlchemyDiscoveries
+        onDiscover={props.onSecret}
+        reducedMotion={props.reducedMotion}
+      >
+        <Sign
+          text="? / AFTER HOURS"
+          position={[0, 1.53, 0.48]}
+          width={1.7}
+          color="#ffe1a1"
+          background="#143446"
+        />
+      </AlchemyDiscoveries>
       <group position={[7.5, 0, 8]}>
         <Box position={[0, 2, 0]} scale={[0.06, 4, 0.06]} color="#688ba4" />
         <Box

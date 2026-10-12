@@ -51,7 +51,10 @@ test("discovery restoration rejects malformed ids and keeps each reward unique",
   const found = addDiscovery([], "dark-hour");
   assert.equal(addDiscovery(found, "dark-hour"), found);
   assert.equal(addDiscovery(found, "arcade-code").length, 2);
-  assert.equal(restoreDiscoveries(secrets.map((s) => s.id)).length, 5);
+  assert.equal(
+    restoreDiscoveries(secrets.map((s) => s.id)).length,
+    secrets.length,
+  );
 });
 
 test("physical secrets have walkable approaches and resolve the correct action", () => {
@@ -153,7 +156,10 @@ test("waterfront camera looks inland from the water and movement remains aligned
     rearWallZ = -15.5;
   const cameraZ = -18 + offset.z;
   assert.ok(cameraZ < -20.4, "the camera is on the water side of the railing");
-  assert.ok(Math.max(cameraZ, targetZ) < rearWallZ, "the laboratory cannot obstruct this sightline");
+  assert.ok(
+    Math.max(cameraZ, targetZ) < rearWallZ,
+    "the laboratory cannot obstruct this sightline",
+  );
   assert.ok(offset.y < 8, "the waterfront framing stays at human scale");
   const right = movementVector(1, 0, offset.x, offset.z);
   assert.ok(Math.abs(right.x * offset.x + right.z * offset.z) < 0.001);

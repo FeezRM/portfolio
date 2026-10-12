@@ -1,4 +1,6 @@
-export const secrets = [
+import { contentAlchemy, isPublicInstagramHref } from "./alchemy.ts";
+
+const secretDefinitions = [
   {
     id: "campus-dog",
     title: "A very good companion",
@@ -47,9 +49,65 @@ export const secrets = [
       "A familiar sequence. A new possibility. Your arcade instincts are still sharp.",
     symbol: "⚡",
   },
+  {
+    id: "alchemy-lab",
+    title: "The other side of Faiz",
+    action: "Investigate the alchemy desk",
+    hint: "Past the workshop, a desk glows a little warmer than the rest of the campus. Look for three tiny bottles.",
+    message:
+      "You found Content Alchemy. There is a creator behind the engineer. Step inside and build a little content magic.",
+    symbol: "△",
+    position: { x: -16, z: 8 },
+  },
+  {
+    id: "alchemy-seal",
+    title: "The creator's codex",
+    action: "",
+    hint: "Inside the hidden studio, four ingredients belong in one particular order. Start with a spark; finish with refinement.",
+    message:
+      "Ideation → scripting → recording → editing. You turned scattered ingredients into a system. The creator's codex is yours.",
+    symbol: "✦",
+  },
+  {
+    id: "creator-signal",
+    title: "A signal from the studio",
+    action: "Inspect the studio phone",
+    hint: "There is a little phone beside the courtyard benches. Its signal comes from outside this world.",
+    message:
+      "You found the creator's frequency. Follow the signal to Faiz's Instagram.",
+    symbol: "◉",
+    position: { x: -5.8, z: 12.4 },
+    available: isPublicInstagramHref(contentAlchemy.instagramHref),
+  },
+  {
+    id: "alchemy-offer",
+    title: "An invitation to build",
+    action: "Read the sealed commission",
+    hint: "A sealed envelope sits beside the alchemy desk. Some quests are meant to become real collaborations.",
+    message:
+      "A new quest awaits. Open the commission to explore working with Content Alchemy.",
+    symbol: "✉",
+    position: { x: -14.5, z: 6.7 },
+    available: contentAlchemy.offer !== null,
+  },
 ] as const;
 
-export type SecretId = (typeof secrets)[number]["id"];
+export const secrets = secretDefinitions.filter(
+  (secret) => !("available" in secret) || secret.available,
+);
+export type SecretId = (typeof secretDefinitions)[number]["id"];
+const coreSecretIds: SecretId[] = [
+  "campus-dog",
+  "velvet-door",
+  "moon-soda",
+  "dark-hour",
+  "arcade-code",
+];
+
+// Additional stories never take the original outfit reward away from returning explorers.
+export function hasGoldenJacket(discovered: readonly SecretId[]) {
+  return coreSecretIds.every((id) => discovered.includes(id));
+}
 export const secretStorageKey = "faiz-blue-hour-discoveries-v1";
 export const secretCode = [
   "ArrowUp",

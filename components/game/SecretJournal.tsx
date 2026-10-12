@@ -1,11 +1,14 @@
-import { secrets, type SecretId } from "@/lib/game/secrets";
+import { secrets, hasGoldenJacket, type SecretId } from "@/lib/game/secrets";
+import type { AlchemyTab } from "@/lib/game/alchemy";
 
 export function SecretJournal({
   discovered,
   onReset,
+  onOpenAlchemy,
 }: {
   discovered: SecretId[];
   onReset: () => void;
+  onOpenAlchemy: (tab: AlchemyTab) => void;
 }) {
   const complete = discovered.length === secrets.length;
   return (
@@ -16,9 +19,14 @@ export function SecretJournal({
       </h3>
       <p className="project-lead">
         {complete
-          ? "Every secret found. A golden jacket is yours to wear around the campus."
+          ? "Every secret found. You know the campus and the creator behind it."
           : "A dog, a strange door, a little moonlight. This world has a few stories tucked into its corners."}
       </p>
+      {hasGoldenJacket(discovered) && (
+        <p className="journal-reward">
+          ✦ Original five stories found. Your golden jacket is unlocked.
+        </p>
+      )}
       <div className="discovery-progress">
         <span>
           {discovered.length} / {secrets.length} DISCOVERED
@@ -51,6 +59,39 @@ export function SecretJournal({
                   <details>
                     <summary>A small hint ↗</summary>
                     <p>{secret.hint}</p>
+                  </details>
+                )}
+                {found &&
+                  [
+                    "alchemy-lab",
+                    "alchemy-seal",
+                    "creator-signal",
+                    "alchemy-offer",
+                  ].includes(secret.id) && (
+                    <button
+                      className="text-button"
+                      onClick={() =>
+                        onOpenAlchemy(
+                          secret.id === "creator-signal"
+                            ? "signal"
+                            : secret.id === "alchemy-offer"
+                              ? "offer"
+                              : "studio",
+                        )
+                      }
+                    >
+                      Revisit the hidden studio ↗
+                    </button>
+                  )}
+                {!found && secret.id === "alchemy-lab" && (
+                  <details>
+                    <summary>Explore without the 3D world ↗</summary>
+                    <button
+                      className="text-button"
+                      onClick={() => onOpenAlchemy("studio")}
+                    >
+                      Investigate the alchemy desk ↗
+                    </button>
                   </details>
                 )}
               </div>
