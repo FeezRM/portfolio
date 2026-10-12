@@ -4,9 +4,10 @@ export const contentAlchemy = {
   description:
     "Ideas become easier to act on when there is a system behind them.",
   contactHref: "mailto:faiz.kera@gmail.com?subject=Content%20Alchemy%20enquiry",
-  // Pending the user's Notion connection or supplied public links; never infer handles/pricing.
-  instagramHref: null as string | null,
-  instagramHandle: null as string | null,
+  // Public profile supplied by Faiz and verified on Instagram.
+  instagramHref: "https://www.instagram.com/feezkera/" as string | null,
+  instagramHandle: "@feezkera" as string | null,
+  // The offer stays unset until Faiz provides the public package details.
   offer: null as {
     title: string;
     description: string;

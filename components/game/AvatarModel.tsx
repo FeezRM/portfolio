@@ -5,6 +5,7 @@ import { useFrame } from "@react-three/fiber";
 import { useAnimations, useGLTF } from "@react-three/drei";
 import { clone } from "three/addons/utils/SkeletonUtils.js";
 import * as THREE from "three";
+const avatarUrl = "/models/faiz-blue-hour.glb?v=likeness-1";
 
 export function AvatarModel({
   root,
@@ -17,7 +18,7 @@ export function AvatarModel({
   golden: boolean;
   reducedMotion: boolean;
 }) {
-  const gltf = useGLTF("/models/faiz-blue-hour.glb");
+  const gltf = useGLTF(avatarUrl);
   const { character, coatMaterials } = useMemo(() => {
     const character = clone(gltf.scene);
     const coatMaterials: THREE.MeshStandardMaterial[] = [];
@@ -48,7 +49,7 @@ export function AvatarModel({
   }, [actions]);
   useEffect(() => {
     coatMaterials.forEach((material) =>
-      material.color.set(golden ? "#c1a353" : "#142954"),
+      material.color.set(golden ? "#c1a353" : "#17222c"),
     );
   }, [golden, coatMaterials]);
   useEffect(
@@ -90,4 +91,4 @@ export function AvatarModel({
   );
 }
 
-useGLTF.preload("/models/faiz-blue-hour.glb");
+useGLTF.preload(avatarUrl);

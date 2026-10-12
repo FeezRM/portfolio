@@ -74,6 +74,47 @@ test("skin weights are normalized and reference valid joints across the full exp
     }
 });
 
+test("likeness details follow the head rig and the glasses preserve visible eyes", () => {
+  const parents = new Map();
+  gltf.nodes.forEach((node, index) =>
+    (node.children || []).forEach((child) => parents.set(child, index)),
+  );
+  const head = gltf.nodes.findIndex((node) => node.name === "Head");
+  for (const name of [
+    "Left_Glasses_Rim",
+    "Right_Glasses_Rim",
+    "Left_Glasses_Lens",
+    "Right_Glasses_Lens",
+    "Glasses_Bridge",
+    "Left_Earbud",
+    "Right_Earbud",
+    "Faiz_Face",
+    "Soul_Patch",
+  ]) {
+    let index = gltf.nodes.findIndex((node) => node.name === name);
+    assert.ok(index >= 0, name);
+    const node = gltf.nodes[index];
+    if (name.endsWith("Lens")) {
+      const material =
+        gltf.materials[gltf.meshes[node.mesh].primitives[0].material];
+      assert.equal(material.alphaMode, "BLEND");
+      assert.ok(material.pbrMetallicRoughness.baseColorFactor[3] < 0.2);
+    }
+    while (parents.has(index) && index !== head) index = parents.get(index);
+    assert.equal(
+      index,
+      head,
+      `${name} must follow the head, not float during walking`,
+    );
+  }
+  assert.ok(gltf.nodes.some((node) => node.name === "Silver_Chain"));
+  const face = gltf.nodes.find((node) => node.name === "Faiz_Face");
+  assert.ok(
+    gltf.meshes[face.mesh].primitives[0].attributes.COLOR_0 !== undefined,
+    "painted facial hair must be embedded in the face surface",
+  );
+});
+
 test("courtyard camera stays close while eastern destinations are viewed from the open plaza", () => {
   const arrival = cameraOffset({ x: 0, z: 7 });
   assert.ok(arrival.y < 7 && arrival.y > 4);

@@ -24,7 +24,7 @@ export function SecretJournal({
       </p>
       {hasGoldenJacket(discovered) && (
         <p className="journal-reward">
-          ✦ Original five stories found. Your golden jacket is unlocked.
+          ✦ Original five stories found. Your golden outfit is unlocked.
         </p>
       )}
       <div className="discovery-progress">
