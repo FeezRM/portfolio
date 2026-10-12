@@ -21,6 +21,7 @@ export function DetailBox({
   metalness = 0,
   roughness = 0.65,
   emissive,
+  emissiveIntensity,
 }: {
   position: Triple;
   scale: Triple;
@@ -30,6 +31,7 @@ export function DetailBox({
   metalness?: number;
   roughness?: number;
   emissive?: string;
+  emissiveIntensity?: number;
 }) {
   const [width, height, depth] = scale;
   const geometry = useMemo(
@@ -57,7 +59,7 @@ export function DetailBox({
         roughness={roughness}
         metalness={metalness}
         emissive={emissive}
-        emissiveIntensity={emissive ? 1.5 : 0}
+        emissiveIntensity={emissiveIntensity ?? (emissive ? 1.5 : 0)}
       />
     </mesh>
   );
@@ -182,21 +184,56 @@ export function CampusBuilding({
             </group>
           );
         })}
-        {width > 12 && Array.from({ length: bays }, (_, i) => (
-          <group key={`rear-${i}`} position={[-width / 2 + 0.6 + bayWidth * (i + 0.5), 0, -depth / 2 - 0.035]} rotation={[0, Math.PI, 0]}>
-            {[0.43, 0.7].map((level) => (
-              <group key={level} position={[0, height * level, 0]}>
-                <Surface size={[bayWidth - 0.28, height * 0.22]} color="#31515a" glass />
-                {[-1, 1].map((s) => (
-                  <DetailBox key={s} position={[s * (bayWidth - 0.2) / 2, 0, 0.06]} scale={[0.08, height * 0.25, 0.16]} color={trim} radius={0.014} />
-                ))}
-                <DetailBox position={[0, -height * 0.12, 0.075]} scale={[bayWidth - 0.12, 0.12, 0.24]} color={trim} radius={0.02} />
-                <DetailBox position={[0, height * 0.12, 0.05]} scale={[bayWidth - 0.12, 0.07, 0.16]} color={trim} radius={0.016} />
-                <DetailBox position={[0, 0, 0.035]} scale={[0.028, height * 0.22, 0.07]} color="#a7b4ab" metalness={0.6} radius={0.005} />
-              </group>
-            ))}
-          </group>
-        ))}
+        {width > 12 &&
+          Array.from({ length: bays }, (_, i) => (
+            <group
+              key={`rear-${i}`}
+              position={[
+                -width / 2 + 0.6 + bayWidth * (i + 0.5),
+                0,
+                -depth / 2 - 0.035,
+              ]}
+              rotation={[0, Math.PI, 0]}
+            >
+              {[0.43, 0.7].map((level) => (
+                <group key={level} position={[0, height * level, 0]}>
+                  <Surface
+                    size={[bayWidth - 0.28, height * 0.22]}
+                    color="#31515a"
+                    glass
+                  />
+                  {[-1, 1].map((s) => (
+                    <DetailBox
+                      key={s}
+                      position={[(s * (bayWidth - 0.2)) / 2, 0, 0.06]}
+                      scale={[0.08, height * 0.25, 0.16]}
+                      color={trim}
+                      radius={0.014}
+                    />
+                  ))}
+                  <DetailBox
+                    position={[0, -height * 0.12, 0.075]}
+                    scale={[bayWidth - 0.12, 0.12, 0.24]}
+                    color={trim}
+                    radius={0.02}
+                  />
+                  <DetailBox
+                    position={[0, height * 0.12, 0.05]}
+                    scale={[bayWidth - 0.12, 0.07, 0.16]}
+                    color={trim}
+                    radius={0.016}
+                  />
+                  <DetailBox
+                    position={[0, 0, 0.035]}
+                    scale={[0.028, height * 0.22, 0.07]}
+                    color="#a7b4ab"
+                    metalness={0.6}
+                    radius={0.005}
+                  />
+                </group>
+              ))}
+            </group>
+          ))}
         {[0.18, 0.87, 1].map((level, i) => (
           <DetailBox
             key={level}

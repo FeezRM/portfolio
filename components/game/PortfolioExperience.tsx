@@ -22,6 +22,13 @@ import {
   type nearestTarget,
 } from "@/lib/game/world";
 import { playTone } from "@/lib/game/audio";
+import {
+  rootNavigation,
+  openPanel,
+  backPanel,
+  syncPanel,
+  panelHash,
+} from "@/lib/game/navigation";
 import { Portrait } from "./Portrait";
 import { PortfolioPanel } from "./PortfolioPanel";
 import { PersonaRadio } from "./PersonaRadio";
@@ -190,9 +197,18 @@ function TouchStick({ onMove }: { onMove: (point: Point) => void }) {
     setKnob({ x: 0, z: 0 });
   }, [onMove]);
   useEffect(() => {
+    const release = (event: globalThis.PointerEvent) => {
+      if (event.pointerId === active.current) stop();
+    };
     window.addEventListener("blur", stop);
+    window.addEventListener("pointerup", release, true);
+    window.addEventListener("pointercancel", release, true);
+    document.addEventListener("visibilitychange", stop);
     return () => {
       window.removeEventListener("blur", stop);
+      window.removeEventListener("pointerup", release, true);
+      window.removeEventListener("pointercancel", release, true);
+      document.removeEventListener("visibilitychange", stop);
       onMove({ x: 0, z: 0 });
     };
   }, [onMove, stop]);
@@ -202,6 +218,7 @@ function TouchStick({ onMove }: { onMove: (point: Point) => void }) {
       role="group"
       aria-label="Touch movement joystick"
       onPointerDown={(event) => {
+        if (event.pointerType === "mouse" || active.current !== null) return;
         event.preventDefault();
         event.stopPropagation();
         active.current = event.pointerId;
@@ -211,14 +228,18 @@ function TouchStick({ onMove }: { onMove: (point: Point) => void }) {
       onPointerMove={move}
       onPointerUp={(event) => {
         event.stopPropagation();
-        stop();
+        if (event.pointerId === active.current) stop();
       }}
       onClick={(event) => {
         event.preventDefault();
         event.stopPropagation();
       }}
-      onPointerCancel={stop}
-      onLostPointerCapture={stop}
+      onPointerCancel={(event) => {
+        if (event.pointerId === active.current) stop();
+      }}
+      onLostPointerCapture={(event) => {
+        if (event.pointerId === active.current) stop();
+      }}
     >
       <i
         style={{ transform: `translate(${knob.x * 32}px, ${knob.z * 32}px)` }}
@@ -250,6 +271,7 @@ export function PortfolioExperience() {
     dialogRef = useRef<HTMLDivElement>(null),
     returnFocus = useRef<HTMLElement | null>(null),
     previousPosition = useRef<Point>({ x: 0, z: 7 });
+  const panelNavigation = useRef(rootNavigation());
   const reducedMotion = motion || systemReduced;
   const [discovered, setDiscovered] = useState<SecretId[]>([]),
     [secretToast, setSecretToast] = useState<SecretId | null>(null);
@@ -306,14 +328,15 @@ export function PortfolioExperience() {
       )
         returnFocus.current = document.activeElement;
       joystick.current = { x: 0, z: 0 };
+      panelNavigation.current = openPanel(panelNavigation.current, {
+        overlay: section,
+        project,
+      });
       setOverlay(section);
       setProjectId(project);
       playTone("open", sound);
-      if (
-        section &&
-        (section === "alchemy" || destinations.some((d) => d.id === section))
-      ) {
-        const hash = `#${section}${project ? `/${project}` : ""}`;
+      if (section) {
+        const hash = panelHash({ overlay: section, project });
         if (location.hash !== hash) history.pushState(null, "", hash);
       }
     },
@@ -329,14 +352,21 @@ export function PortfolioExperience() {
     [discover, open],
   );
   const close = useCallback(() => {
-    setOverlay(null);
+    const next = backPanel(panelNavigation.current);
+    panelNavigation.current = next;
+    setOverlay(next.current.overlay);
+    setProjectId(next.current.project);
     joystick.current = { x: 0, z: 0 };
-    if (location.hash)
-      history.pushState(null, "", location.pathname + location.search);
-    requestAnimationFrame(() => {
-      if (returnFocus.current?.isConnected) returnFocus.current.focus();
-      else mainRef.current?.focus();
-    });
+    history.replaceState(
+      null,
+      "",
+      location.pathname + location.search + panelHash(next.current),
+    );
+    if (!next.current.overlay)
+      requestAnimationFrame(() => {
+        if (returnFocus.current?.isConnected) returnFocus.current.focus();
+        else mainRef.current?.focus();
+      });
     playTone("select", sound);
   }, [sound]);
   const failure = useCallback(() => {
@@ -379,6 +409,7 @@ export function PortfolioExperience() {
     setReady(false);
     setFailed(false);
     setOverlay(null);
+    panelNavigation.current = rootNavigation();
     setWorldKey((key) => key + 1);
     joystick.current = { x: 0, z: 0 };
     if (location.hash)
@@ -399,6 +430,7 @@ export function PortfolioExperience() {
       previousPosition.current = destination.position;
       setTarget(null);
       setOverlay(null);
+      panelNavigation.current = rootNavigation();
       joystick.current = { x: 0, z: 0 };
       if (location.hash)
         history.pushState(null, "", location.pathname + location.search);
@@ -413,6 +445,7 @@ export function PortfolioExperience() {
     const onMotion = () => setSystemReduced(media.matches);
     const onHash = () => {
       const state = parseHash(location.hash);
+      panelNavigation.current = syncPanel(panelNavigation.current, state);
       setOverlay(state.overlay);
       setProjectId(state.project);
       joystick.current = { x: 0, z: 0 };
@@ -953,6 +986,7 @@ export function PortfolioExperience() {
                           className="ink-button"
                           onClick={() => {
                             setMode("entry");
+                            panelNavigation.current = rootNavigation();
                             close();
                           }}
                         >

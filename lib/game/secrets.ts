@@ -60,6 +60,15 @@ const secretDefinitions = [
     position: { x: -16, z: 8 },
   },
   {
+    id: "hello-world",
+    title: "The first message",
+    action: "",
+    hint: "A lighthouse on the far shore sends a familiar greeting. Click the tower across the water.",
+    message:
+      "HELLO, WORLD. Even a tiny first program can be the beginning of something big. Lighthouse connection established.",
+    symbol: "⌘",
+  },
+  {
     id: "alchemy-seal",
     title: "The creator's codex",
     action: "",

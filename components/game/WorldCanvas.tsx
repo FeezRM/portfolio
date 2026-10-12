@@ -1,5 +1,6 @@
 "use client";
 import { AlchemyDiscoveries } from "./AlchemyDiscoveries";
+import { CoastalWorld } from "./CoastalWorld";
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import {
@@ -21,6 +22,7 @@ import {
 } from "./CampusArchitecture";
 import { CampusLighting, WorldEffects } from "./CampusLighting";
 import { RenderAudit } from "./RenderAudit";
+import { bindMovementKeys } from "@/lib/game/input";
 import * as THREE from "three";
 import type { SecretId } from "@/lib/game/secrets";
 import {
@@ -341,8 +343,8 @@ function Harbor({
   });
   return (
     <>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.5, -53]}>
-        <planeGeometry args={[220, 66, 96, 32]} />
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.55, 0]}>
+        <planeGeometry args={[320, 320, 96, 96]} />
         <shaderMaterial
           ref={material}
           uniforms={uniforms}
@@ -373,14 +375,6 @@ function Harbor({
         scale={[40, 0.04, 0.04]}
         color="#86afc4"
       />
-      {Array.from({ length: 17 }, (_, i) => (
-        <Box
-          key={i}
-          position={[-45 + i * 5.5, 2 + (i % 4), -83 + (i % 2) * 3]}
-          scale={[3.5, 4 + (i % 4) * 2, 3]}
-          color={night ? "#143c77" : "#83b8ce"}
-        />
-      ))}
       <Sign
         text="MAKE SOMETHING THAT MATTERS."
         position={[-8, 2.1, -20]}
@@ -598,21 +592,6 @@ function Player(props: WorldProps) {
       )
         return;
       if (
-        [
-          "w",
-          "a",
-          "s",
-          "d",
-          "arrowup",
-          "arrowdown",
-          "arrowleft",
-          "arrowright",
-        ].includes(event.key.toLowerCase())
-      ) {
-        event.preventDefault();
-        keys.current.add(event.key.toLowerCase());
-      }
-      if (
         !event.repeat &&
         ["e", "Enter"].includes(event.key) &&
         target.current &&
@@ -627,19 +606,21 @@ function Player(props: WorldProps) {
           onOpen(target.current.section, target.current.project);
       }
     };
-    const up = (e: KeyboardEvent) => keys.current.delete(e.key.toLowerCase());
     const clear = () => {
       keys.current.clear();
       velocity.current = { x: 0, z: 0 };
     };
+    const unbindMovement = bindMovementKeys(
+      window,
+      keys.current,
+      () => !paused,
+      clear,
+    );
     window.addEventListener("keydown", down);
-    window.addEventListener("keyup", up);
-    window.addEventListener("blur", clear);
     document.addEventListener("visibilitychange", clear);
     return () => {
+      unbindMovement();
       window.removeEventListener("keydown", down);
-      window.removeEventListener("keyup", up);
-      window.removeEventListener("blur", clear);
       document.removeEventListener("visibilitychange", clear);
     };
   }, [paused, onOpen, onSecret]);
@@ -772,6 +753,7 @@ function Scene(props: WorldProps) {
     <>
       <CampusLighting night={props.night} quality={props.quality} />
       <Ground />
+      <CoastalWorld night={props.night} onDiscover={props.onSecret} />
       <Harbor night={props.night} reducedMotion={props.reducedMotion} />
       {[-5, 5].map((x) => (
         <Box
@@ -933,11 +915,6 @@ function Scene(props: WorldProps) {
           </mesh>
         </group>
       ))}
-      <Box
-        position={[0, -0.35, -1.5]}
-        scale={[40.3, 0.6, 37]}
-        color="#779bac"
-      />
       <Player {...props} />
       <WorldEffects quality={props.quality} />
       <RenderAudit quality={props.quality} />

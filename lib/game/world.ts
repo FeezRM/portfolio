@@ -280,6 +280,8 @@ export function parseHash(hash: string): {
 } {
   const [section, project] = hash.replace(/^#\/?/, "").split("/");
   if (section === "home" || !section) return { overlay: null };
+  if (["menu", "map", "settings", "journal"].includes(section))
+    return { overlay: section as Overlay };
   if (section === "alchemy")
     return {
       overlay: "alchemy",
