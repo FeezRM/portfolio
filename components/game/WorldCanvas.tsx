@@ -1,7 +1,25 @@
 "use client";
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { memo, useEffect, useMemo, useRef, type RefObject } from "react";
+import {
+  memo,
+  Suspense,
+  useEffect,
+  useMemo,
+  useRef,
+  type RefObject,
+} from "react";
+import { AvatarModel } from "./AvatarModel";
+import {
+  CampusBuilding,
+  CampusTree,
+  CampusBench,
+  CampusClock,
+  CampusGround,
+  DetailBox,
+} from "./CampusArchitecture";
+import { CampusLighting, WorldEffects } from "./CampusLighting";
+import { RenderAudit } from "./RenderAudit";
 import * as THREE from "three";
 import type { SecretId } from "@/lib/game/secrets";
 import {
@@ -35,24 +53,7 @@ export interface WorldProps {
   golden: boolean;
 }
 
-function Box({
-  position,
-  scale,
-  color,
-  ...props
-}: {
-  position: [number, number, number];
-  scale: [number, number, number];
-  color: string;
-  rotation?: [number, number, number];
-}) {
-  return (
-    <mesh position={position} scale={scale} castShadow receiveShadow {...props}>
-      <boxGeometry />
-      <meshStandardMaterial color={color} roughness={0.72} />
-    </mesh>
-  );
-}
+const Box = DetailBox;
 
 function Sign({
   text,
@@ -61,6 +62,7 @@ function Sign({
   color = "#bdfcff",
   background = "#082d66",
   rotation = 0,
+  twoSided = true,
 }: {
   text: string;
   position: [number, number, number];
@@ -68,6 +70,7 @@ function Sign({
   color?: string;
   background?: string;
   rotation?: number;
+  twoSided?: boolean;
 }) {
   const texture = useMemo(() => {
     const canvas = document.createElement("canvas");
@@ -90,55 +93,13 @@ function Sign({
   return (
     <mesh position={position} rotation={[0, rotation, 0]}>
       <planeGeometry args={[width, width * 0.1875]} />
-      <meshBasicMaterial map={texture} side={THREE.DoubleSide} />
+      <meshBasicMaterial map={texture} side={twoSided ? THREE.DoubleSide : THREE.FrontSide} />
     </mesh>
   );
 }
 
-function Tree({ x, z, size = 1 }: { x: number; z: number; size?: number }) {
-  return (
-    <group position={[x, 0, z]} scale={size}>
-      <mesh position={[0, 1.1, 0]} castShadow>
-        <cylinderGeometry args={[0.11, 0.17, 2.2, 6]} />
-        <meshStandardMaterial color="#657783" />
-      </mesh>
-      <mesh position={[0, 2.55, 0]} castShadow>
-        <icosahedronGeometry args={[1.1, 1]} />
-        <meshStandardMaterial color="#68aca0" roughness={1} />
-      </mesh>
-      <mesh position={[0.4, 3.15, 0]} castShadow>
-        <icosahedronGeometry args={[0.8, 1]} />
-        <meshStandardMaterial color="#86cdb4" roughness={1} />
-      </mesh>
-      <Box position={[0, 0.18, 0]} scale={[1.3, 0.36, 1.3]} color="#a4c7cf" />
-    </group>
-  );
-}
-
-function Bench({
-  x,
-  z,
-  rotation = 0,
-}: {
-  x: number;
-  z: number;
-  rotation?: number;
-}) {
-  return (
-    <group position={[x, 0, z]} rotation={[0, rotation, 0]}>
-      <Box position={[0, 0.6, 0]} scale={[2, 0.12, 0.55]} color="#648093" />
-      <Box position={[0, 1, -0.2]} scale={[2, 0.65, 0.1]} color="#7c98a3" />
-      {[-0.75, 0.75].map((x) => (
-        <Box
-          key={x}
-          position={[x, 0.3, 0]}
-          scale={[0.1, 0.6, 0.45]}
-          color="#174d74"
-        />
-      ))}
-    </group>
-  );
-}
+const Tree = CampusTree;
+const Bench = CampusBench;
 
 function Building({
   x,
@@ -160,69 +121,22 @@ function Building({
   side?: boolean;
 }) {
   return (
-    <group position={[x, 0, z]} rotation={[0, side ? Math.PI / 2 : 0, 0]}>
-      <Box
-        position={[0, height / 2, 0]}
-        scale={[width, height, depth]}
-        color="#cadce5"
-      />
-      <Box
-        position={[0, height * 0.6, depth / 2 + 0.03]}
-        scale={[width * 0.95, height * 0.55, 0.08]}
-        color="#296792"
-      />
-      {Array.from({ length: Math.ceil(width / 1.4) }, (_, i) => (
-        <Box
-          key={i}
-          position={[
-            -width / 2 + 0.4 + i * 1.4,
-            height * 0.6,
-            depth / 2 + 0.12,
-          ]}
-          scale={[0.08, height * 0.55, 0.15]}
-          color="#96cfdd"
-        />
-      ))}
-      <Box
-        position={[0, height * 0.57, depth / 2 + 0.13]}
-        scale={[width, 0.1, 0.15]}
-        color="#94cbdc"
-      />
-      <Box
-        position={[0, height + 0.1, 0]}
-        scale={[width + 0.5, 0.22, depth + 0.5]}
-        color="#edf6f8"
-      />
-      <Box
-        position={[0, height + 0.24, depth / 2]}
-        scale={[width + 0.5, 0.06, 0.12]}
-        color={accent}
-      />
-      <Box
-        position={[0, 1.4, depth / 2 + 0.14]}
-        scale={[1.5, 2.7, 0.15]}
-        color="#153f73"
-      />
-      <Box
-        position={[0, 2.9, depth / 2 + 0.9]}
-        scale={[3.5, 0.12, 2]}
-        color="#b4d1dd"
-      />
+    <CampusBuilding
+      x={x}
+      z={z}
+      width={width}
+      depth={depth}
+      height={height}
+      accent={accent}
+      side={side}
+    >
       <Sign
         text={name}
-        position={[0, height - 0.5, depth / 2 + 0.18]}
-        width={Math.min(width - 0.5, 6)}
+        position={[0, height * 0.9, depth / 2 + 0.17]}
+        width={Math.min(width - 1, 6)}
         color={accent}
       />
-      {[-1.5, 1.5].map((x) => (
-        <Box
-          key={x}
-          position={[x, 1.4, depth / 2 + 1.6]}
-          scale={[0.08, 2.8, 0.08]}
-          color="#d6f4f3"
-        />
-      ))}
-    </group>
+    </CampusBuilding>
   );
 }
 
@@ -290,16 +204,34 @@ function Exhibits({
             onOpen("projects", e.id);
           }}
         >
-          <Box
-            position={[0, 0.55, 0]}
-            scale={[1.2, 1.1, 1.2]}
-            color="#173a69"
-          />
-          <Box
-            position={[0, 1.13, 0]}
-            scale={[1.4, 0.06, 1.4]}
-            color={e.color}
-          />
+          <mesh position={[0, 0.07, 0]} castShadow receiveShadow>
+            <cylinderGeometry args={[0.7, 0.73, 0.14, 48]} />
+            <meshStandardMaterial color="#c5b69b" roughness={0.7} />
+          </mesh>
+          <mesh position={[0, 0.61, 0]} castShadow receiveShadow>
+            <cylinderGeometry args={[0.47, 0.58, 1.02, 48]} />
+            <meshStandardMaterial
+              color="#1b3a49"
+              roughness={0.3}
+              metalness={0.6}
+            />
+          </mesh>
+          <mesh position={[0, 1.15, 0]} castShadow>
+            <cylinderGeometry args={[0.65, 0.65, 0.06, 48]} />
+            <meshStandardMaterial
+              color="#6b9697"
+              roughness={0.23}
+              metalness={0.5}
+            />
+          </mesh>
+          <mesh position={[0, 1.19, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+            <ringGeometry args={[0.58, 0.62, 64]} />
+            <meshStandardMaterial
+              color={e.color}
+              emissive={e.color}
+              emissiveIntensity={2.2}
+            />
+          </mesh>
           <Sign
             text={e.name.toUpperCase()}
             position={[0, 0.68, 0.61]}
@@ -364,40 +296,21 @@ function Exhibits({
   );
 }
 
-function Ground() {
-  const texture = useMemo(() => {
-    const canvas = document.createElement("canvas");
-    canvas.width = canvas.height = 256;
-    const ctx = canvas.getContext("2d")!;
-    ctx.fillStyle = "#c1d3d8";
-    ctx.fillRect(0, 0, 256, 256);
-    ctx.strokeStyle = "#9dafb9";
-    ctx.lineWidth = 2;
-    ctx.strokeRect(0, 0, 128, 128);
-    ctx.strokeRect(128, 128, 128, 128);
-    ctx.strokeRect(128, 0, 128, 128);
-    ctx.strokeRect(0, 128, 128, 128);
-    const result = new THREE.CanvasTexture(canvas);
-    result.wrapS = result.wrapT = THREE.RepeatWrapping;
-    result.repeat.set(20, 20);
-    result.colorSpace = THREE.SRGBColorSpace;
-    return result;
-  }, []);
-  useEffect(() => () => texture.dispose(), [texture]);
-  return (
-    <mesh
-      rotation={[-Math.PI / 2, 0, 0]}
-      position={[0, -0.01, -2]}
-      receiveShadow
-    >
-      <planeGeometry args={[40, 40]} />
-      <meshStandardMaterial map={texture} roughness={0.9} />
-    </mesh>
-  );
-}
+const Ground = CampusGround;
 
-const waterVertex = `varying vec2 vUv; void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`;
-const waterFragment = `uniform float uTime; uniform vec3 uColor; varying vec2 vUv; void main(){float w=sin(vUv.x*110.+uTime*.6+sin(vUv.y*25.))*sin(vUv.y*90.-uTime*.35);float line=smoothstep(.76,.94,w);vec3 color=mix(uColor,vec3(.48,.9,.97),line*.42);gl_FragColor=vec4(color,1.);}`;
+const waterVertex = `uniform float uTime; varying vec2 vUv; varying vec3 vWorld;
+void main(){vUv=uv;vec3 p=position;p.z+=sin(p.x*.48+uTime*.6)*.035+sin(p.y*.7-uTime*.4)*.025;vWorld=(modelMatrix*vec4(p,1.)).xyz;gl_Position=projectionMatrix*viewMatrix*vec4(vWorld,1.);}`;
+const waterFragment = `uniform float uTime; uniform vec3 uColor; varying vec2 vUv; varying vec3 vWorld;
+void main(){
+float ripple=sin(vWorld.x*2.4+sin(vWorld.z*1.1)+uTime*.55)*sin(vWorld.z*3.1-uTime*.45);
+vec3 normal=normalize(vec3(cos(vWorld.x*.48+uTime*.6)*.08,1.,sin(vWorld.z*.7-uTime*.4)*.065));
+vec3 view=normalize(cameraPosition-vWorld);float fresnel=pow(1.-max(dot(view,normal),0.),3.);
+vec3 color=mix(uColor,vec3(.38,.5,.49),fresnel*.7);
+color+=vec3(.08,.13,.12)*smoothstep(.78,.99,ripple)*(.2+fresnel);
+gl_FragColor=vec4(color,1.);
+#include <tonemapping_fragment>
+#include <colorspace_fragment>
+}`;
 
 function Harbor({
   night,
@@ -410,7 +323,7 @@ function Harbor({
   const uniforms = useMemo(
     () => ({
       uTime: { value: 0 },
-      uColor: { value: new THREE.Color("#126caa") },
+      uColor: { value: new THREE.Color("#2c7788") },
     }),
     [],
   );
@@ -419,13 +332,13 @@ function Harbor({
       material.current.uniforms.uTime.value = reducedMotion
         ? 0
         : clock.elapsedTime;
-      material.current.uniforms.uColor.value.set(night ? "#063962" : "#126caa");
+      material.current.uniforms.uColor.value.set(night ? "#12334b" : "#2c7788");
     }
   });
   return (
     <>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.5, -53]}>
-        <planeGeometry args={[220, 66]} />
+        <planeGeometry args={[220, 66, 96, 32]} />
         <shaderMaterial
           ref={material}
           uniforms={uniforms}
@@ -466,48 +379,22 @@ function Harbor({
       ))}
       <Sign
         text="MAKE SOMETHING THAT MATTERS."
-        position={[0, 2.1, -20]}
+        position={[-8, 2.1, -20]}
         width={7.5}
+        twoSided={false}
+      />
+      <Sign
+        text="MAKE SOMETHING THAT MATTERS."
+        position={[-8, 2.1, -20.025]}
+        width={7.5}
+        rotation={Math.PI}
+        twoSided={false}
       />
     </>
   );
 }
 
-function ClockTower() {
-  return (
-    <group position={[0, 0, 1]}>
-      <mesh position={[0, 0.2, 0]} receiveShadow>
-        <cylinderGeometry args={[2, 2.1, 0.4, 48]} />
-        <meshStandardMaterial color="#95bbc8" />
-      </mesh>
-      <mesh position={[0, 0.41, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <ringGeometry args={[1.2, 1.85, 48]} />
-        <meshStandardMaterial color="#2189b6" metalness={0.3} roughness={0.2} />
-      </mesh>
-      <Box position={[0, 2.8, 0]} scale={[0.8, 5.2, 0.8]} color="#164c8d" />
-      <Box position={[0, 3, 0.43]} scale={[0.07, 4.9, 0.02]} color="#35f2ef" />
-      <Box position={[0, 5.3, 0]} scale={[1.8, 1.7, 1.3]} color="#effcff" />
-      <mesh position={[0, 5.3, 0.66]}>
-        <circleGeometry args={[0.63, 48]} />
-        <meshBasicMaterial color="#163a8f" />
-      </mesh>
-      <Box
-        position={[0, 5.49, 0.68]}
-        scale={[0.045, 0.4, 0.025]}
-        color="#35f2ef"
-      />
-      <Box
-        position={[0.16, 5.3, 0.68]}
-        scale={[0.36, 0.045, 0.025]}
-        color="#f5fbff"
-      />
-      <mesh position={[0, 6.35, 0]} rotation={[0, Math.PI / 4, 0]} castShadow>
-        <coneGeometry args={[1.55, 0.75, 4]} />
-        <meshStandardMaterial color="#0d37b1" />
-      </mesh>
-    </group>
-  );
-}
+const ClockTower = CampusClock;
 
 function CampusSecrets({
   onDiscover,
@@ -532,7 +419,7 @@ function CampusSecrets({
         }}
       >
         <mesh position={[0, 0.4, 0]} scale={[0.7, 0.65, 1.1]} castShadow>
-          <sphereGeometry args={[0.4, 12, 8]} />
+          <sphereGeometry args={[0.4, 24, 16]} />
           <meshToonMaterial color="#f5fbff" />
         </mesh>
         {[-0.17, 0.17].flatMap((x) =>
@@ -546,12 +433,12 @@ function CampusSecrets({
           )),
         )}
         <mesh position={[0, 0.65, 0.33]} castShadow>
-          <sphereGeometry args={[0.28, 12, 8]} />
+          <sphereGeometry args={[0.28, 24, 16]} />
           <meshToonMaterial color="#f5fbff" />
         </mesh>
         {[-0.17, 0.17].map((x) => (
           <mesh key={x} position={[x, 0.92, 0.29]} rotation={[0, 0, -x]}>
-            <coneGeometry args={[0.12, 0.28, 3]} />
+            <coneGeometry args={[0.12, 0.28, 12]} />
             <meshToonMaterial color="#dce7ef" />
           </mesh>
         ))}
@@ -583,7 +470,7 @@ function CampusSecrets({
           <meshToonMaterial color="#ff576f" />
         </mesh>
         <mesh ref={tail} position={[0, 0.53, -0.39]} rotation={[0.5, 0, 0]}>
-          <torusGeometry args={[0.2, 0.065, 6, 16, Math.PI * 1.6]} />
+          <torusGeometry args={[0.2, 0.065, 12, 32, Math.PI * 1.6]} />
           <meshToonMaterial color="#f5fbff" />
         </mesh>
       </group>
@@ -665,134 +552,10 @@ function CampusSecrets({
   );
 }
 
-function Avatar({
-  root,
-  leftLeg,
-  rightLeg,
-  leftArm,
-  rightArm,
-  golden,
-}: {
-  root: RefObject<THREE.Group | null>;
-  leftLeg: RefObject<THREE.Group | null>;
-  rightLeg: RefObject<THREE.Group | null>;
-  leftArm: RefObject<THREE.Group | null>;
-  rightArm: RefObject<THREE.Group | null>;
-  golden: boolean;
-}) {
-  const limb = (
-    side: number,
-    ref: RefObject<THREE.Group | null>,
-    leg: boolean,
-  ) => (
-    <group
-      ref={ref}
-      position={[side * (leg ? 0.13 : 0.29), leg ? 0.87 : 1.42, 0]}
-    >
-      <Box
-        position={[0, leg ? -0.37 : -0.26, 0]}
-        scale={leg ? [0.19, 0.73, 0.21] : [0.16, 0.51, 0.19]}
-        color={leg ? "#092449" : golden ? "#ccb650" : "#153ea9"}
-      />
-      {leg ? (
-        <Box
-          position={[0, -0.78, 0.055]}
-          scale={[0.21, 0.12, 0.38]}
-          color="#071124"
-        />
-      ) : (
-        <mesh position={[0, -0.54, 0]} castShadow>
-          <sphereGeometry args={[0.085, 8, 6]} />
-          <meshToonMaterial color="#dcbfae" />
-        </mesh>
-      )}
-    </group>
-  );
-  return (
-    <group ref={root}>
-      <Box
-        position={[0, 1.17, 0]}
-        scale={[0.46, 0.63, 0.28]}
-        color={golden ? "#f8e66a" : "#173c99"}
-      />
-      <Box
-        position={[0, 1.3, 0.15]}
-        scale={[0.14, 0.37, 0.015]}
-        color="#f2f9fc"
-      />
-      <Box
-        position={[0, 1.26, 0.17]}
-        scale={[0.04, 0.25, 0.012]}
-        color="#182940"
-      />
-      <Box position={[0, 1.53, 0]} scale={[0.13, 0.15, 0.15]} color="#dcbfae" />
-      <mesh position={[0, 1.77, 0]} castShadow>
-        <sphereGeometry args={[0.24, 12, 10]} />
-        <meshToonMaterial color="#dcbfae" />
-      </mesh>
-      <mesh position={[0, 1.86, -0.035]} scale={[1.04, 0.78, 1.1]} castShadow>
-        <sphereGeometry args={[0.255, 10, 8]} />
-        <meshToonMaterial color="#0a1c40" />
-      </mesh>
-      {[-0.14, -0.05, 0.04, 0.13].map((x, i) => (
-        <mesh
-          key={x}
-          position={[x, 1.85 - i * 0.014, 0.19]}
-          rotation={[0.2, 0, -0.35]}
-          castShadow
-        >
-          <coneGeometry args={[0.1, 0.3, 4]} />
-          <meshToonMaterial color="#0d2857" />
-        </mesh>
-      ))}
-      {[-1, 1].map((side) => (
-        <group key={side}>
-          <mesh
-            position={[side * 0.245, 1.77, 0]}
-            rotation={[0, 0, Math.PI / 2]}
-          >
-            <cylinderGeometry args={[0.095, 0.095, 0.07, 16]} />
-            <meshStandardMaterial
-              color="#35f2ef"
-              metalness={0.4}
-              roughness={0.3}
-            />
-          </mesh>
-          <Box
-            position={[side * 0.085, 1.77, 0.212]}
-            scale={[0.045, 0.028, 0.02]}
-            color="#081124"
-          />
-        </group>
-      ))}
-      <mesh position={[0, 1.84, 0]} rotation={[0, Math.PI / 2, 0]}>
-        <torusGeometry args={[0.25, 0.018, 6, 24, Math.PI]} />
-        <meshStandardMaterial color="#35f2ef" />
-      </mesh>
-      {limb(-1, leftLeg, true)}
-      {limb(1, rightLeg, true)}
-      {limb(-1, leftArm, false)}
-      {limb(1, rightArm, false)}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.025, 0]}>
-        <circleGeometry args={[0.38, 24]} />
-        <meshBasicMaterial
-          color="#061841"
-          transparent
-          opacity={0.2}
-          depthWrite={false}
-        />
-      </mesh>
-    </group>
-  );
-}
-
 function Player(props: WorldProps) {
   const { paused, onOpen, onSecret } = props;
-  const root = useRef<THREE.Group>(null),
-    leftLeg = useRef<THREE.Group>(null),
-    rightLeg = useRef<THREE.Group>(null),
-    leftArm = useRef<THREE.Group>(null),
-    rightArm = useRef<THREE.Group>(null);
+  const root = useRef<THREE.Group>(null);
+  const animationSpeed = useRef(0);
   const keys = useRef(new Set<string>()),
     position = useRef<Point>({ x: 0, z: 7 }),
     velocity = useRef({ x: 0, z: 0 }),
@@ -906,13 +669,22 @@ function Player(props: WorldProps) {
       12,
       delta,
     );
+    const previousX = position.current.x,
+      previousZ = position.current.z;
     if (!props.paused)
       position.current = movePlayer(
         position.current,
         velocity.current.x * delta,
         velocity.current.z * delta,
       );
-    const moving = Math.hypot(velocity.current.x, velocity.current.z);
+    const moving =
+      delta > 0
+        ? Math.hypot(
+            position.current.x - previousX,
+            position.current.z - previousZ,
+          ) / delta
+        : 0;
+    animationSpeed.current = props.paused ? 0 : moving;
     phase.current += moving * delta * 3;
     if (root.current) {
       root.current.position.set(
@@ -928,19 +700,6 @@ function Player(props: WorldProps) {
         );
         root.current.rotation.y += diff * Math.min(1, delta * 12);
       }
-      const swing =
-        Math.sin(phase.current) * Math.min(moving / speed, 1) * 0.55;
-      if (
-        leftLeg.current &&
-        rightLeg.current &&
-        leftArm.current &&
-        rightArm.current
-      ) {
-        leftLeg.current.rotation.x = swing;
-        rightLeg.current.rotation.x = -swing;
-        leftArm.current.rotation.x = -swing * 0.65;
-        rightArm.current.rotation.x = swing * 0.65;
-      }
     }
     const offset = cameraOffset(position.current);
     cameraTarget.set(
@@ -952,7 +711,7 @@ function Player(props: WorldProps) {
       cameraTarget,
       props.reducedMotion ? 1 : 1 - Math.exp(-delta * 3),
     );
-    lookTarget.set(position.current.x, 0.9, position.current.z - 1);
+    lookTarget.set(position.current.x, 1.65, position.current.z - 1);
     camera.lookAt(lookTarget);
     elapsed.current += delta;
     if (elapsed.current > 0.15) {
@@ -966,13 +725,11 @@ function Player(props: WorldProps) {
     }
   });
   return (
-    <Avatar
+    <AvatarModel
       root={root}
-      leftLeg={leftLeg}
-      rightLeg={rightLeg}
-      leftArm={leftArm}
-      rightArm={rightArm}
+      speed={animationSpeed}
       golden={props.golden}
+      reducedMotion={props.reducedMotion}
     />
   );
 }
@@ -1009,31 +766,9 @@ function Scene(props: WorldProps) {
   }, [gl, onReady, onFailure]);
   return (
     <>
-      <color attach="background" args={[props.night ? "#071d48" : "#b4dcf0"]} />
-      <fog attach="fog" args={[props.night ? "#071d48" : "#b4dcf0", 48, 115]} />
-      <hemisphereLight
-        args={[
-          props.night ? "#7cb6ff" : "#e3faff",
-          "#527087",
-          props.night ? 1.3 : 2.4,
-        ]}
-      />
-      <directionalLight
-        position={[-15, 24, 12]}
-        color={props.night ? "#77b4ff" : "#fff0d1"}
-        intensity={props.night ? 1 : 3}
-        castShadow={props.quality === "high"}
-        shadow-mapSize={[2048, 2048]}
-        shadow-camera-left={-30}
-        shadow-camera-right={30}
-        shadow-camera-top={30}
-        shadow-camera-bottom={-30}
-        shadow-bias={-0.0004}
-      />
+      <CampusLighting night={props.night} quality={props.quality} />
       <Ground />
       <Harbor night={props.night} reducedMotion={props.reducedMotion} />
-      <Box position={[0, 0.008, 6]} scale={[4.5, 0.015, 20]} color="#dce8e9" />
-      <Box position={[0, 0.008, -8]} scale={[32, 0.015, 3]} color="#dce8e9" />
       {[-5, 5].map((x) => (
         <Box
           key={x}
@@ -1052,18 +787,18 @@ function Scene(props: WorldProps) {
       </mesh>
       {planters.map((x) => (
         <group key={x} position={[x, 0, 9]}>
-          <Box position={[0, 0.2, 0]} scale={[4, 0.4, 1.8]} color="#789aaa" />
+          <Box position={[0, 0.2, 0]} scale={[4, 0.4, 1.8]} color="#cbbda2" />
           <Box
             position={[0, 0.41, 0]}
             scale={[3.8, 0.05, 1.6]}
-            color="#669788"
+            color="#454d35"
           />
           {Array.from({ length: 7 }, (_, i) => (
             <mesh
               key={i}
               position={[-1.5 + i * 0.5, 0.64, Math.sin(i * 3) * 0.4]}
             >
-              <icosahedronGeometry args={[0.34, 0]} />
+              <sphereGeometry args={[0.34, 16, 12]} />
               <meshStandardMaterial color={i % 2 ? "#8cbea0" : "#639c8a"} />
             </mesh>
           ))}
@@ -1153,7 +888,13 @@ function Scene(props: WorldProps) {
       <Sign text="01 / ARRIVAL COURT" position={[-4.6, 1, 7.2]} width={3.2} />
       <Box position={[-4.6, 0.48, 7]} scale={[3.4, 1, 0.4]} color="#173f6a" />
       {trees.map(([x, z]) => (
-        <Tree key={`${x}:${z}`} x={x} z={z} size={x === 13 ? 1.3 : 1} />
+        <Tree
+          key={`${x}:${z}`}
+          x={x}
+          z={z}
+          size={x === 13 ? 1.3 : 1}
+          reducedMotion={props.reducedMotion}
+        />
       ))}
       {benches.map(([x, z]) => (
         <Bench key={`${x}:${z}`} x={x} z={z} rotation={z < 0 ? Math.PI : 0} />
@@ -1182,6 +923,8 @@ function Scene(props: WorldProps) {
         color="#779bac"
       />
       <Player {...props} />
+      <WorldEffects quality={props.quality} />
+      <RenderAudit quality={props.quality} />
     </>
   );
 }
@@ -1190,17 +933,23 @@ function WorldCanvas(props: WorldProps) {
   return (
     <Canvas
       aria-label="Walkable coastal campus. Move with WASD or arrow keys; use the menu to browse all content."
-      shadows={props.quality === "high" ? { type: THREE.PCFShadowMap } : false}
+      shadows={
+        props.quality === "high" ? { type: THREE.PCFSoftShadowMap } : false
+      }
       dpr={props.quality === "high" ? [1, 1.5] : 1}
       frameloop={props.paused ? "demand" : "always"}
-      camera={{ position: [9, 12, 20], fov: 43, near: 0.1, far: 160 }}
+      camera={{ position: [6.3, 5.8, 16.8], fov: 45, near: 0.1, far: 170 }}
       gl={{
-        antialias: props.quality === "high",
+        antialias: true,
+        toneMapping: THREE.ACESFilmicToneMapping,
+        toneMappingExposure: 1.05,
         powerPreference: "high-performance",
       }}
       fallback={<span aria-hidden="true" />}
     >
-      <Scene {...props} />
+      <Suspense fallback={null}>
+        <Scene {...props} />
+      </Suspense>
     </Canvas>
   );
 }

@@ -1,7 +1,12 @@
 import { secrets, type SecretId } from "./secrets.ts";
 
 export type Section =
-  "profile" | "projects" | "skills" | "experience" | "stealth" | "contact";
+  | "profile"
+  | "projects"
+  | "skills"
+  | "experience"
+  | "stealth"
+  | "contact";
 export type Overlay = Section | "menu" | "map" | "settings" | "journal" | null;
 export type Point = { x: number; z: number };
 export type Obstacle = { x: number; z: number; width: number; depth: number };
@@ -156,8 +161,16 @@ export function movePlayer(position: Point, dx: number, dz: number): Point {
 export function cameraOffset(position: Point) {
   const t = clamp((-position.z - 9) / 5, 0, 1);
   const north = t * t * (3 - 2 * t);
-  // A steeper waterfront view sees over the lab instead of hiding the avatar behind it.
-  return { x: 9 - north * 2, y: 12 + north * 4, z: 13 - north * 9 };
+  const e = clamp((position.x - 8) / 6, 0, 1);
+  const east = e * e * (3 - 2 * e);
+  // Frame the avatar at human scale; look from the plaza side near the archive.
+  // At the waterfront, orbit over the water and look back toward the campus.
+  // The mid-orbit lift clears rooftops without leaving the final view overhead.
+  return {
+    x: (6.3 - east * 11) * (1 - north) + 5.8 * north,
+    y: 5.8 + north * 0.5 + Math.sin(north * Math.PI) * 6,
+    z: (9.8 - east * 4.4) * (1 - north) - 9.2 * north,
+  };
 }
 
 export function movementVector(

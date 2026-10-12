@@ -1,12 +1,12 @@
 # Original asset ledger
 
-Locally bundled artwork and interface tones were authored in this repository. No game models, character portraits, screenshots, or soundtrack recordings are shipped. Persona soundtrack playback uses supplied audio files through a native HTML audio player. No Spotify or YouTube player is loaded.
+The character, architecture, illustration, foliage textures, and interface tones are original assets authored for this portfolio. The lighting environment comes from Poly Haven under CC0. Persona soundtrack playback uses the user-supplied audio files through a native HTML audio player. No Spotify or YouTube player is loaded.
 
 | Asset                                                             | Location                                                 | Production method                                                                                                                                |
 | ----------------------------------------------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
 | Headphone character illustration                                  | `components/game/Portrait.tsx`                           | Original SVG paths and gradients; used on the title screen and main menu.                                                                        |
 | Campus architecture, clock tower, harbor, benches, foliage, signs | `components/game/WorldCanvas.tsx`                        | Authored procedural Three.js geometry and locally generated canvas textures.                                                                     |
-| Articulated avatar                                                | `components/game/WorldCanvas.tsx`                        | Original hierarchical mesh rig; joints animate while walking and turning. No external GLB download.                                              |
+| Articulated avatar                                                | `components/game/WorldCanvas.tsx`                        | Original skinned GLB at `public/models/faiz-blue-hour.glb`; authoring source in `scripts/author-campus-avatar.mjs`; blended Idle/Walk clips.                                              |
 | Project exhibit sculptures                                        | `components/game/WorldCanvas.tsx`                        | Four original geometric sculptures representing attention, editing, voice, and research.                                                         |
 | Project illustrations                                             | `components/game/PortfolioPanel.tsx` + `app/globals.css` | Original CSS illustrations. These are symbolic graphics, not claimed screenshots of the projects.                                                |
 | Water                                                             | `components/game/WorldCanvas.tsx`                        | Original procedural GLSL wave pattern.                                                                                                           |
@@ -26,3 +26,12 @@ The player starts quietly at 15% after a visitor interaction, with persistent mu
 The optional Add Audio control stores personal copies in IndexedDB on that device. These are never uploaded or included in a deployment. For the owner's soundtrack to play for every visitor, the supplied files must be placed in the public directory and rebuilt.
 
 QA uses two original, quiet synthetic WAV fixtures in ignored `.qa/` storage. Those are audio-engine test fixtures, not Persona recordings, and are not exported with the website.
+
+
+## Visual upgrade — October 12, 2026
+
+- `public/models/faiz-blue-hour.glb`: original 17-bone avatar, smooth clothing/hair meshes, headphone details, Idle and Walk animation clips. Authored with the reproducible Three.js mesh/export script, not downloaded from a game or avatar marketplace. Uncompressed GLB: 953,448 bytes. Run `node scripts/author-campus-avatar.mjs` to regenerate.
+- `components/game/CampusArchitecture.tsx`: original beveled facade kit, inset framed windows, door hardware, wooden benches, lathed clock column, four clock faces, ground color/bump textures, and painted leaf-cluster cutouts. Static trim is batched by material; foliage uses instancing.
+- `public/environments/kiara-dawn-1k.hdr`: Kiara 1 Dawn by Greg Zaal, from [Poly Haven](https://polyhaven.com/a/kiara_1_dawn), downloaded from [the official asset CDN](https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/kiara_1_dawn_1k.hdr). [CC0 asset license](https://polyhaven.com/license). 1,475,077 bytes. Self-hosted, used for lighting/reflections.
+- Total new model/environment files: 2,428,525 bytes (approximately 2.32 MiB), before HTTP compression. Source GLB remains readable and below 1 MiB; geometry compression is not required for this initial asset.
+- Environment materials, lighting, ambient occlusion, bloom, and water shading are art-directed for this portfolio. They are not representations of ATLUS shader code. No Quaternius pack or three-vrm dependency is bundled; the shipped character uses the native GLTF path.

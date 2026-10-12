@@ -147,13 +147,14 @@ test("music starts quiet and restores only safe volume and mute preferences", ()
   assert.equal(restoreMusicPreferences({ volume: "100" }).volume, 15);
 });
 
-test("waterfront camera sees above the lab and movement remains aligned to the new view", () => {
+test("waterfront camera looks inland from the water and movement remains aligned to the view", () => {
   const offset = cameraOffset({ x: 0, z: -18 });
   const targetZ = -19,
-    targetHeight = 0.9,
     rearWallZ = -15.5;
-  const fraction = (rearWallZ - targetZ) / (-18 + offset.z - targetZ);
-  assert.ok(targetHeight + fraction * (offset.y - targetHeight) > 5.7);
+  const cameraZ = -18 + offset.z;
+  assert.ok(cameraZ < -20.4, "the camera is on the water side of the railing");
+  assert.ok(Math.max(cameraZ, targetZ) < rearWallZ, "the laboratory cannot obstruct this sightline");
+  assert.ok(offset.y < 8, "the waterfront framing stays at human scale");
   const right = movementVector(1, 0, offset.x, offset.z);
   assert.ok(Math.abs(right.x * offset.x + right.z * offset.z) < 0.001);
   assert.ok(Math.abs(Math.hypot(right.x, right.z) - 1) < 0.001);
