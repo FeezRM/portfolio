@@ -2432,105 +2432,329 @@ a {
   animation: travel-reveal 0.55s ease-out both;
 }
 
-/* The radio stays mounted as visitors walk and open content panels. */
-.game-footer .radio-toggle {
-  font-size: 8px;
+/* Native background soundtrack; collapsing controls never stops the music. */
+.soundtrack-widget {
+  position: relative;
+  z-index: 40;
+}
+.soundtrack-widget audio {
+  display: none;
+}
+.radio-mini {
+  position: fixed;
+  right: calc(3.5% + 120px);
+  bottom: 22px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.radio-toggle {
+  padding: 8px 0;
+  color: #b1c5e3;
+  font:
+    8px var(--font-mono),
+    monospace;
+  letter-spacing: 0.13em;
   white-space: nowrap;
 }
-.game-footer .radio-toggle span {
+.radio-toggle span {
   color: var(--aqua);
   font-size: 13px;
+  margin-left: 8px;
+}
+.radio-quick-mute {
+  color: var(--aqua);
+  font:
+    12px var(--font-mono),
+    monospace;
+  padding: 5px;
+}
+.has-overlay .radio-mini {
+  right: 3.5%;
+}
+.has-overlay .panel-footer {
+  padding-right: 145px;
 }
 .persona-radio {
+  --station-color: #35f2ef;
   position: fixed;
   right: 3.5%;
-  top: 134px;
-  width: 320px;
-  padding: 15px;
-  background: #061841f2;
+  bottom: 64px;
+  width: 340px;
+  padding: 16px;
+  background: #061841f7;
   border: 1px solid #35f2ef55;
+  border-top: 3px solid var(--station-color);
   box-shadow: 7px 7px 0 #123de8aa;
-  z-index: 14;
+  z-index: 40;
   color: var(--paper);
-  letter-spacing: normal;
   text-align: left;
-  pointer-events: auto;
+  max-height: calc(100svh - 140px);
+  overflow-y: auto;
+}
+.persona-radio.station-4 {
+  --station-color: #ffe377;
+}
+.persona-radio.station-5 {
+  --station-color: #ff738a;
 }
 .persona-radio header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 12px;
-  gap: 10px;
+  margin-bottom: 14px;
 }
-.persona-radio header span {
-  display: block;
-  font-family: var(--font-mono), monospace;
-  font-size: 8px;
+.persona-radio header > span {
+  font:
+    8px var(--font-mono),
+    monospace;
   letter-spacing: 0.13em;
-  color: var(--aqua);
+  color: var(--station-color);
 }
-.persona-radio header strong {
-  display: block;
-  font-family: var(--font-display), sans-serif;
-  font-size: 19px;
-  font-style: italic;
-  letter-spacing: 0.03em;
-  line-height: 1.2;
-  margin-top: 6px;
-}
-.game-footer .persona-radio header button {
-  font-size: 28px;
-  padding: 2px 5px;
+.persona-radio header button {
+  font-size: 23px;
+  padding: 0 5px;
   color: white;
   line-height: 1;
 }
-.radio-follow {
+.radio-now-playing {
   display: flex;
   align-items: center;
-  gap: 7px;
-  font-size: 9px;
-  margin-bottom: 12px;
-  color: #bdd9ed;
+  gap: 12px;
+  padding-bottom: 14px;
 }
-.radio-follow input {
-  accent-color: var(--aqua);
-  width: 13px;
-  height: 13px;
-  margin: 0;
+.radio-now-playing > div:nth-child(2) {
+  flex: 1;
+  min-width: 0;
+}
+.radio-game {
+  font:
+    8px var(--font-mono),
+    monospace;
+  color: var(--station-color);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+.radio-now-playing h3 {
+  margin: 5px 0;
+  font:
+    italic 700 23px/1.02 var(--font-display),
+    sans-serif;
+  text-transform: uppercase;
+}
+.radio-now-playing p {
+  color: #91accd;
+  font-size: 8px;
+}
+.radio-disc {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 1px solid #315275;
+  background: repeating-radial-gradient(circle, #0c2146 0 3px, #1d365a 4px 5px);
+  display: grid;
+  place-items: center;
+  transform: rotate(-20deg);
+}
+.radio-disc i {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 5px solid var(--station-color);
+  background: #061841;
+}
+.radio-bars {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  height: 28px;
+}
+.radio-bars i {
+  width: 3px;
+  background: #4974a7;
+  height: 12px;
+}
+.radio-bars i:nth-child(2) {
+  height: 24px;
+}
+.radio-bars i:nth-child(3) {
+  height: 18px;
+}
+.radio-bars i:nth-child(4) {
+  height: 9px;
+}
+.is-playing .radio-bars i {
+  background: var(--station-color);
+}
+.radio-seek input {
+  width: 100%;
+  height: 3px;
+  margin: 4px 0 8px;
+  accent-color: var(--station-color);
+  cursor: pointer;
+}
+.radio-seek > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font:
+    8px var(--font-mono),
+    monospace;
+  color: #7ea7c8;
+}
+.radio-seek time {
+  color: #d5eaff;
+  min-width: 28px;
+}
+.radio-seek input:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.radio-transport {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+}
+.radio-transport button {
+  padding: 7px 10px;
+  background: #163764;
+  color: #e8f8ff;
+  font:
+    11px var(--font-mono),
+    monospace;
+}
+.radio-transport .radio-play {
+  flex: 1;
+  font-size: 9px;
+}
+.radio-transport .radio-mute {
+  font-size: 8px;
+  color: var(--station-color);
+  min-width: 56px;
+}
+.radio-transport button:hover,
+.radio-stations button:hover {
+  background: #275890;
+}
+.radio-transport button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.radio-volume {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 12px 0;
+  color: #b5d4ee;
+  font:
+    8px var(--font-mono),
+    monospace;
+}
+.radio-volume input {
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  height: 12px;
+  accent-color: var(--station-color);
+  cursor: pointer;
+}
+.radio-volume output {
+  min-width: 30px;
+  text-align: right;
+}
+.radio-stations {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 9px;
+}
+.radio-stations button {
+  flex: 1;
+  padding: 5px;
+  border: 1px solid #4974a766;
+  color: #b5d4ee;
+  font:
+    8px var(--font-mono),
+    monospace;
+}
+.radio-stations button[aria-pressed="true"] {
+  background: var(--station-color);
+  border-color: var(--station-color);
+  color: #061841;
+  font-weight: 700;
 }
 .persona-radio select {
   width: 100%;
   border: 1px solid #4974a7;
   background: #102b61;
   color: #f5fbff;
-  font-family: var(--font-body), sans-serif;
-  font-size: 10px;
+  font:
+    10px var(--font-body),
+    sans-serif;
   padding: 8px;
-  margin-bottom: 10px;
-}
-.spotify-host {
-  min-height: 80px;
-}
-.spotify-host iframe {
-  border: 0;
-  width: 100%;
-  height: 80px;
-  border-radius: 12px;
 }
 .radio-status {
-  font-family: var(--font-body), sans-serif;
-  font-size: 9px;
-  line-height: 1.6;
+  font:
+    9px/1.5 var(--font-body),
+    sans-serif;
   color: #b5d4ee;
-  margin-top: 9px;
+  margin-top: 10px;
 }
-.radio-external {
-  display: inline-block;
-  font-size: 8px;
-  color: var(--aqua);
-  margin-top: 7px;
+.radio-files {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 14px;
+}
+.radio-files button {
+  color: var(--station-color);
+  font:
+    8px var(--font-mono),
+    monospace;
+  padding: 5px 0;
   text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.radio-files button + button {
+  font-size: 7px;
+  color: #91accd;
+}
+.radio-privacy {
+  font-size: 8px;
+  color: #7ea7c8;
+  margin-top: 8px;
+}
+@media (max-width: 700px) {
+  .persona-radio {
+    right: 16px;
+    width: min(340px, calc(100vw - 32px));
+    padding: 14px;
+    bottom: 112px;
+  }
+  .radio-mini {
+    right: 16px;
+    bottom: 64px;
+    gap: 5px;
+    padding: 3px 8px;
+    background: #061841ed;
+    border: 1px solid #35f2ef44;
+  }
+  .radio-toggle {
+    font-size: 8px;
+    min-height: 32px;
+  }
+  .radio-quick-mute {
+    font-size: 12px;
+    min-height: 32px;
+    min-width: 28px;
+  }
+  .has-overlay .panel-footer {
+    padding-right: 0;
+  }
+  .is-exploring .game-footer > div {
+    padding-right: 110px;
+  }
 }
 .moon-icon {
   padding: 0;
@@ -2689,12 +2913,6 @@ a {
   gap: 16px;
 }
 @media (max-width: 700px) {
-  .persona-radio {
-    right: 16px;
-    top: 108px;
-    width: min(310px, calc(100vw - 32px));
-    padding: 12px;
-  }
   .game-footer .radio-toggle {
     font-size: 6px;
   }

@@ -509,9 +509,13 @@ export function PortfolioExperience() {
         open("map");
       }
       if (overlay && e.key === "Tab") {
-        const elements = dialogRef.current?.querySelectorAll<HTMLElement>(
-          'button:not(:disabled),a[href],input,select,[tabindex="0"]',
-        );
+        const elements = Array.from(
+          dialogRef.current
+            ?.closest(".experience-ui")
+            ?.querySelectorAll<HTMLElement>(
+              'button:not(:disabled),a[href],input,select,iframe,[tabindex="0"]',
+            ) ?? [],
+        ).filter((element) => element.getClientRects().length > 0);
         if (!elements?.length) return;
         const first = elements[0],
           last = elements[elements.length - 1];
@@ -751,10 +755,6 @@ export function PortfolioExperience() {
               : "A WORLD OF POSSIBILITIES"}
           </span>
           <div>
-            <PersonaRadio
-              location={mode === "entry" ? "contact" : currentLocation.id}
-              night={night}
-            />
             <button
               onClick={() => {
                 setSound((value) => !value);
@@ -777,216 +777,226 @@ export function PortfolioExperience() {
         </footer>
       </div>
 
-      {overlay && (
-        <div className={`overlay-layer overlay-${overlay}`}>
-          <div className="overlay-water" aria-hidden="true" />
-          <div className="overlay-diagonal" aria-hidden="true" />
-          <span className="overlay-ghost" aria-hidden="true">
-            {overlay === "stealth" ? "SIGNAL" : overlay.toUpperCase()}
-          </span>
-          <div
-            ref={dialogRef}
-            tabIndex={-1}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="panel-title"
-            className={`portfolio-dialog ${overlay === "menu" ? "main-menu-dialog" : ""}`}
-          >
-            <header className="panel-header">
-              <div>
-                <p>FAIZ KERAWALA / THE PORTFOLIO</p>
-                <h2 id="panel-title">{title}</h2>
-              </div>
-              <button
-                className="close-button"
-                onClick={close}
-                aria-label="Close panel"
-              >
-                <span>BACK</span> ×
-              </button>
-            </header>
-            {overlay === "menu" ? (
-              <div className="main-menu">
-                <div className="main-menu-list">
-                  {destinations.map((d) => (
-                    <button
-                      key={d.id}
-                      onClick={() => open(d.id)}
-                      onPointerEnter={() => playTone("select", sound)}
-                    >
-                      <span>{d.number}</span>
-                      <strong>{d.title}</strong>
-                      <i>↗</i>
-                    </button>
-                  ))}
-                  <div className="menu-secondary">
-                    <button onClick={() => open("map")}>CAMPUS MAP ↗</button>
-                    <button onClick={() => open("settings")}>SETTINGS ↗</button>
-                    <button onClick={() => open("journal")}>
-                      FIELD JOURNAL {discovered.length}/{secrets.length} ↗
-                    </button>
-                  </div>
+      <div
+        className="experience-ui"
+        role={overlay ? "dialog" : undefined}
+        aria-modal={overlay ? true : undefined}
+        aria-labelledby={overlay ? "panel-title" : undefined}
+      >
+        {overlay && (
+          <div className={`overlay-layer overlay-${overlay}`}>
+            <div className="overlay-water" aria-hidden="true" />
+            <div className="overlay-diagonal" aria-hidden="true" />
+            <span className="overlay-ghost" aria-hidden="true">
+              {overlay === "stealth" ? "SIGNAL" : overlay.toUpperCase()}
+            </span>
+            <div
+              ref={dialogRef}
+              tabIndex={-1}
+              className={`portfolio-dialog ${overlay === "menu" ? "main-menu-dialog" : ""}`}
+            >
+              <header className="panel-header">
+                <div>
+                  <p>FAIZ KERAWALA / THE PORTFOLIO</p>
+                  <h2 id="panel-title">{title}</h2>
                 </div>
-                <div className="menu-portrait">
-                  <span>
-                    KEEP
-                    <br />
-                    CREATING.
-                  </span>
-                  <Portrait />
-                </div>
-              </div>
-            ) : (
-              <div className="panel-body">
-                {overlay === "journal" ? (
-                  <SecretJournal
-                    discovered={discovered}
-                    onReset={resetDiscoveries}
-                  />
-                ) : overlay === "settings" ? (
-                  <div className="settings-view">
-                    <p className="panel-eyebrow">YOUR WORLD, YOUR WAY</p>
-                    <label>
-                      <span>
-                        <strong>Interface sound</strong>
-                        <small>Original, gentle navigation tones.</small>
-                      </span>
-                      <input
-                        type="checkbox"
-                        checked={sound}
-                        onChange={(e) => {
-                          setSound(e.target.checked);
-                          playTone("select", e.target.checked);
-                        }}
-                      />
-                    </label>
-                    <label>
-                      <span>
-                        <strong>Blue hour</strong>
-                        <small>
-                          Moonlit lighting for a different atmosphere.
-                        </small>
-                      </span>
-                      <input
-                        type="checkbox"
-                        checked={night}
-                        onChange={(e) => setNight(e.target.checked)}
-                      />
-                    </label>
-                    <label>
-                      <span>
-                        <strong>Reduce motion</strong>
-                        <small>
-                          {systemReduced
-                            ? "Your device already requests reduced motion."
-                            : "Instant camera follow and quieter transitions."}
-                        </small>
-                      </span>
-                      <input
-                        type="checkbox"
-                        checked={reducedMotion}
-                        disabled={systemReduced}
-                        onChange={(e) => setMotion(e.target.checked)}
-                      />
-                    </label>
-                    <label>
-                      <span>
-                        <strong>Graphics quality</strong>
-                        <small>
-                          Low uses less GPU power and disables shadows.
-                        </small>
-                      </span>
-                      <select
-                        value={quality}
-                        onChange={(e) =>
-                          setQuality(e.target.value as "high" | "low")
-                        }
-                      >
-                        <option value="high">High</option>
-                        <option value="low">Low</option>
-                      </select>
-                    </label>
-                    <div className="panel-actions">
+                <button
+                  className="close-button"
+                  onClick={close}
+                  aria-label="Close panel"
+                >
+                  <span>BACK</span> ×
+                </button>
+              </header>
+              {overlay === "menu" ? (
+                <div className="main-menu">
+                  <div className="main-menu-list">
+                    {destinations.map((d) => (
                       <button
-                        className="ink-button"
-                        onClick={() => {
-                          setMode("entry");
-                          close();
-                        }}
+                        key={d.id}
+                        onClick={() => open(d.id)}
+                        onPointerEnter={() => playTone("select", sound)}
                       >
-                        Return to title <span>↗</span>
+                        <span>{d.number}</span>
+                        <strong>{d.title}</strong>
+                        <i>↗</i>
                       </button>
-                      <button
-                        className="text-button"
-                        onClick={() => {
-                          setSound(false);
-                          setNight(false);
-                          setMotion(false);
-                          setQuality("high");
-                          setTravel((t) => ({
-                            position: { x: 0, z: 7 },
-                            serial: t.serial + 1,
-                          }));
-                          previousPosition.current = { x: 0, z: 7 };
-                          setPosition({ x: 0, z: 7 });
-                        }}
-                      >
-                        Reset preferences
+                    ))}
+                    <div className="menu-secondary">
+                      <button onClick={() => open("map")}>CAMPUS MAP ↗</button>
+                      <button onClick={() => open("settings")}>
+                        SETTINGS ↗
+                      </button>
+                      <button onClick={() => open("journal")}>
+                        FIELD JOURNAL {discovered.length}/{secrets.length} ↗
                       </button>
                     </div>
                   </div>
-                ) : (
-                  <PortfolioPanel
-                    section={overlay}
-                    projectId={projectId}
-                    onProject={(id) => open("projects", id)}
-                    onOpen={open}
-                    onTravel={fastTravel}
-                  />
-                )}
-              </div>
-            )}
-            <footer className="panel-footer">
-              <span>BLUE HOUR / THE WORLD OF FAIZ</span>
-              <button onClick={close}>
-                <kbd>ESC</kbd> RETURN
-              </button>
-            </footer>
+                  <div className="menu-portrait">
+                    <span>
+                      KEEP
+                      <br />
+                      CREATING.
+                    </span>
+                    <Portrait />
+                  </div>
+                </div>
+              ) : (
+                <div className="panel-body">
+                  {overlay === "journal" ? (
+                    <SecretJournal
+                      discovered={discovered}
+                      onReset={resetDiscoveries}
+                    />
+                  ) : overlay === "settings" ? (
+                    <div className="settings-view">
+                      <p className="panel-eyebrow">YOUR WORLD, YOUR WAY</p>
+                      <label>
+                        <span>
+                          <strong>Interface sound</strong>
+                          <small>Original, gentle navigation tones.</small>
+                        </span>
+                        <input
+                          type="checkbox"
+                          checked={sound}
+                          onChange={(e) => {
+                            setSound(e.target.checked);
+                            playTone("select", e.target.checked);
+                          }}
+                        />
+                      </label>
+                      <label>
+                        <span>
+                          <strong>Blue hour</strong>
+                          <small>
+                            Moonlit lighting for a different atmosphere.
+                          </small>
+                        </span>
+                        <input
+                          type="checkbox"
+                          checked={night}
+                          onChange={(e) => setNight(e.target.checked)}
+                        />
+                      </label>
+                      <label>
+                        <span>
+                          <strong>Reduce motion</strong>
+                          <small>
+                            {systemReduced
+                              ? "Your device already requests reduced motion."
+                              : "Instant camera follow and quieter transitions."}
+                          </small>
+                        </span>
+                        <input
+                          type="checkbox"
+                          checked={reducedMotion}
+                          disabled={systemReduced}
+                          onChange={(e) => setMotion(e.target.checked)}
+                        />
+                      </label>
+                      <label>
+                        <span>
+                          <strong>Graphics quality</strong>
+                          <small>
+                            Low uses less GPU power and disables shadows.
+                          </small>
+                        </span>
+                        <select
+                          value={quality}
+                          onChange={(e) =>
+                            setQuality(e.target.value as "high" | "low")
+                          }
+                        >
+                          <option value="high">High</option>
+                          <option value="low">Low</option>
+                        </select>
+                      </label>
+                      <div className="panel-actions">
+                        <button
+                          className="ink-button"
+                          onClick={() => {
+                            setMode("entry");
+                            close();
+                          }}
+                        >
+                          Return to title <span>↗</span>
+                        </button>
+                        <button
+                          className="text-button"
+                          onClick={() => {
+                            setSound(false);
+                            setNight(false);
+                            setMotion(false);
+                            setQuality("high");
+                            setTravel((t) => ({
+                              position: { x: 0, z: 7 },
+                              serial: t.serial + 1,
+                            }));
+                            previousPosition.current = { x: 0, z: 7 };
+                            setPosition({ x: 0, z: 7 });
+                          }}
+                        >
+                          Reset preferences
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <PortfolioPanel
+                      section={overlay}
+                      projectId={projectId}
+                      onProject={(id) => open("projects", id)}
+                      onOpen={open}
+                      onTravel={fastTravel}
+                    />
+                  )}
+                </div>
+              )}
+              <footer className="panel-footer">
+                <span>BLUE HOUR / THE WORLD OF FAIZ</span>
+                <button onClick={close}>
+                  <kbd>ESC</kbd> RETURN
+                </button>
+              </footer>
+            </div>
           </div>
-        </div>
-      )}
-      {secretToast && (
-        <div className="secret-toast" role="status" aria-live="polite">
-          <span className="secret-toast-symbol" aria-hidden="true">
-            {secrets.find((secret) => secret.id === secretToast)!.symbol}
-          </span>
-          <div>
-            <span>
-              HIDDEN STORY / {discovered.length} OF {secrets.length}
+        )}
+        {secretToast && (
+          <div className="secret-toast" role="status" aria-live="polite">
+            <span className="secret-toast-symbol" aria-hidden="true">
+              {secrets.find((secret) => secret.id === secretToast)!.symbol}
             </span>
-            <strong>
-              {secrets.find((secret) => secret.id === secretToast)!.title}
-            </strong>
-            <p>
-              {secrets.find((secret) => secret.id === secretToast)!.message}
-            </p>
+            <div>
+              <span>
+                HIDDEN STORY / {discovered.length} OF {secrets.length}
+              </span>
+              <strong>
+                {secrets.find((secret) => secret.id === secretToast)!.title}
+              </strong>
+              <p>
+                {secrets.find((secret) => secret.id === secretToast)!.message}
+              </p>
+              <button
+                onClick={() => {
+                  setSecretToast(null);
+                  open("journal");
+                }}
+              >
+                Open field journal ↗
+              </button>
+            </div>
             <button
-              onClick={() => {
-                setSecretToast(null);
-                open("journal");
-              }}
+              onClick={() => setSecretToast(null)}
+              aria-label="Dismiss discovery"
             >
-              Open field journal ↗
+              ×
             </button>
           </div>
-          <button
-            onClick={() => setSecretToast(null)}
-            aria-label="Dismiss discovery"
-          >
-            ×
-          </button>
-        </div>
-      )}
+        )}
+        <PersonaRadio
+          location={mode === "entry" ? "contact" : currentLocation.id}
+          night={night}
+        />
+      </div>
       <noscript>
         <section className="no-script-portfolio">
           <h1>Faiz Kerawala</h1>

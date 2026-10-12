@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "tracks": [
+    {
+      "id": "mask",
+      "src": "/music/Beneath%20The%20Mask%20Rain.mp3"
+    },
+    {
+      "id": "night",
+      "src": "/music/Color%20Your%20Night.mp3"
+    },
+    {
+      "id": "whatifs",
+      "src": "/music/No%20More%20What%20Ifs.mp3"
+    }
+  ]
+}

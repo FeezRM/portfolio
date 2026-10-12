@@ -6,3 +6,4 @@ tsconfig.tsbuildinfo
 *.log
 .env*
 !.env.example
+.qa/
