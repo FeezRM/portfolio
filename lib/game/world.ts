@@ -1,6 +1,8 @@
+import { secrets, type SecretId } from "./secrets.ts";
+
 export type Section =
   "profile" | "projects" | "skills" | "experience" | "stealth" | "contact";
-export type Overlay = Section | "menu" | "map" | "settings" | null;
+export type Overlay = Section | "menu" | "map" | "settings" | "journal" | null;
 export type Point = { x: number; z: number };
 export type Obstacle = { x: number; z: number; width: number; depth: number };
 
@@ -117,6 +119,8 @@ export const obstacles: Obstacle[] = [
   ...trees.map(([x, z]) => ({ x, z, width: 1.3, depth: 1.3 })),
   ...benches.map(([x, z]) => ({ x, z, width: 2, depth: 0.6 })),
   ...planters.map((x) => ({ x, z: 9, width: 4, depth: 1.8 })),
+  { x: -13.5, z: -8.5, width: 1.5, depth: 0.55 },
+  { x: 12.5, z: 8.5, width: 1.1, depth: 0.8 },
 ];
 
 export function clamp(value: number, min: number, max: number) {
@@ -149,12 +153,25 @@ export function movePlayer(position: Point, dx: number, dz: number): Point {
   return { x, z };
 }
 
-export function movementVector(horizontal: number, vertical: number) {
+export function cameraOffset(position: Point) {
+  const t = clamp((-position.z - 9) / 5, 0, 1);
+  const north = t * t * (3 - 2 * t);
+  // A steeper waterfront view sees over the lab instead of hiding the avatar behind it.
+  return { x: 9 - north * 2, y: 12 + north * 4, z: 13 - north * 9 };
+}
+
+export function movementVector(
+  horizontal: number,
+  vertical: number,
+  cameraX = 9,
+  cameraZ = 13,
+) {
   const length = Math.max(1, Math.hypot(horizontal, vertical));
-  // Camera is southeast of the player. Screen-up points northwest in world space.
+  const cameraLength = Math.hypot(cameraX, cameraZ) || 1;
+  // Screen-relative controls follow the actual camera heading, including harbor framing.
   return {
-    x: (horizontal * 0.832 + vertical * 0.555) / length,
-    z: (-horizontal * 0.555 + vertical * 0.832) / length,
+    x: (horizontal * cameraZ + vertical * cameraX) / cameraLength / length,
+    z: (-horizontal * cameraX + vertical * cameraZ) / cameraLength / length,
   };
 }
 
@@ -175,10 +192,19 @@ function visible(from: Point, to: Point) {
   return true;
 }
 
-export function nearestTarget(
-  position: Point,
-): { section: Section; project?: string; label: string } | null {
-  const targets = [
+export function nearestTarget(position: Point): {
+  section: Section | null;
+  project?: string;
+  secret?: SecretId;
+  label: string;
+} | null {
+  const targets: {
+    position: Point;
+    section: Section | null;
+    project?: string;
+    secret?: SecretId;
+    label: string;
+  }[] = [
     ...exhibits.map((e) => ({
       position: e.position,
       section: "projects" as Section,
@@ -193,7 +219,20 @@ export function nearestTarget(
         project: undefined,
         label: d.title,
       })),
-  ].sort(
+    ...secrets.flatMap((secret) =>
+      "position" in secret
+        ? [
+            {
+              position: secret.position,
+              section: null,
+              secret: secret.id,
+              label: secret.action,
+            },
+          ]
+        : [],
+    ),
+  ];
+  targets.sort(
     (a, b) =>
       Math.hypot(a.position.x - position.x, a.position.z - position.z) -
       Math.hypot(b.position.x - position.x, b.position.z - position.z),
@@ -204,7 +243,13 @@ export function nearestTarget(
       visible(position, t.position),
   );
   return target
-    ? { section: target.section, project: target.project, label: target.label }
+    ? target.secret
+      ? { section: null, secret: target.secret, label: target.label }
+      : {
+          section: target.section,
+          project: target.project,
+          label: target.label,
+        }
     : null;
 }
 

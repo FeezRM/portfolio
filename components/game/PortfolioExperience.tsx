@@ -24,6 +24,16 @@ import {
 import { playTone } from "@/lib/game/audio";
 import { Portrait } from "./Portrait";
 import { PortfolioPanel } from "./PortfolioPanel";
+import { PersonaRadio } from "./PersonaRadio";
+import { SecretJournal } from "./SecretJournal";
+import {
+  secrets,
+  advanceSecretCode,
+  restoreDiscoveries,
+  addDiscovery,
+  secretStorageKey,
+  type SecretId,
+} from "@/lib/game/secrets";
 
 const WorldCanvas = dynamic(() => import("./WorldCanvas"), {
   ssr: false,
@@ -61,7 +71,7 @@ class WorldBoundary extends Component<
   }
 }
 
-function Calendar() {
+function Calendar({ onMoonTap }: { onMoonTap: () => void }) {
   const [date, setDate] = useState<Date | null>(null);
   useEffect(() => {
     const tick = () => setDate(new Date());
@@ -97,9 +107,13 @@ function Calendar() {
       </div>
       <div className="calendar-sub">
         <span>{parts?.period ?? "Your local time"}</span>
-        <span className="moon-icon" aria-hidden="true">
+        <button
+          className="moon-icon"
+          onClick={onMoonTap}
+          aria-label="Inspect the calendar moon"
+        >
           ◐
-        </span>
+        </button>
       </div>
     </div>
   );
@@ -234,6 +248,52 @@ export function PortfolioExperience() {
     returnFocus = useRef<HTMLElement | null>(null),
     previousPosition = useRef<Point>({ x: 0, z: 7 });
   const reducedMotion = motion || systemReduced;
+  const [discovered, setDiscovered] = useState<SecretId[]>([]),
+    [secretToast, setSecretToast] = useState<SecretId | null>(null);
+  const discoveryRef = useRef<SecretId[]>([]),
+    codeProgress = useRef({ index: 0, lastKey: 0 }),
+    moonTaps = useRef({ count: 0, lastTap: 0 });
+  const discover = useCallback(
+    (id: SecretId) => {
+      const next = addDiscovery(discoveryRef.current, id);
+      discoveryRef.current = next;
+      setDiscovered(next);
+      setSecretToast(id);
+      if (id === "dark-hour") setNight(true);
+      try {
+        localStorage.setItem(secretStorageKey, JSON.stringify(next));
+      } catch {
+        /* Discoveries work without storage. */
+      }
+      playTone("travel", sound);
+    },
+    [sound],
+  );
+  const inspectMoon = useCallback(() => {
+    const now = performance.now();
+    moonTaps.current.count =
+      now - moonTaps.current.lastTap > 4000 ? 1 : moonTaps.current.count + 1;
+    moonTaps.current.lastTap = now;
+    if (moonTaps.current.count >= 7) {
+      moonTaps.current.count = 0;
+      discover("dark-hour");
+    }
+  }, [discover]);
+  const resetDiscoveries = useCallback(() => {
+    discoveryRef.current = [];
+    setDiscovered([]);
+    setSecretToast(null);
+    try {
+      localStorage.removeItem(secretStorageKey);
+    } catch {
+      /* Storage is optional. */
+    }
+  }, []);
+  useEffect(() => {
+    if (!secretToast) return;
+    const timer = window.setTimeout(() => setSecretToast(null), 8000);
+    return () => clearTimeout(timer);
+  }, [secretToast]);
 
   const open = useCallback(
     (section: Overlay, project?: string) => {
@@ -350,6 +410,11 @@ export function PortfolioExperience() {
       onMotion();
       onHash();
       try {
+        const found = restoreDiscoveries(
+          JSON.parse(localStorage.getItem(secretStorageKey) ?? "[]"),
+        );
+        discoveryRef.current = found;
+        setDiscovered(found);
         const saved = JSON.parse(
           localStorage.getItem(settingsKey) ?? "null",
         ) as Partial<Settings> | null;
@@ -429,6 +494,16 @@ export function PortfolioExperience() {
         e.target.matches("input,textarea,select,[contenteditable=true]")
       )
         return;
+      if (!overlay) {
+        const now = performance.now();
+        const previous =
+          now - codeProgress.current.lastKey > 5000
+            ? 0
+            : codeProgress.current.index;
+        const result = advanceSecretCode(previous, e.key);
+        codeProgress.current = { index: result.index, lastKey: now };
+        if (result.complete) discover("arcade-code");
+      }
       if (mode === "explore" && !overlay && e.key.toLowerCase() === "m") {
         e.preventDefault();
         open("map");
@@ -455,7 +530,7 @@ export function PortfolioExperience() {
     };
     window.addEventListener("keydown", keydown);
     return () => window.removeEventListener("keydown", keydown);
-  }, [overlay, mode, open, close]);
+  }, [overlay, mode, open, close, discover]);
 
   useEffect(() => {
     if (overlay) {
@@ -485,9 +560,11 @@ export function PortfolioExperience() {
       ? "Your next chapter."
       : overlay === "map"
         ? "Go somewhere."
-        : overlay === "settings"
-          ? "Make it yours."
-          : (destinations.find((d) => d.id === overlay)?.title ?? "");
+        : overlay === "journal"
+          ? "The untold stories."
+          : overlay === "settings"
+            ? "Make it yours."
+            : (destinations.find((d) => d.id === overlay)?.title ?? "");
 
   return (
     <main
@@ -512,6 +589,8 @@ export function PortfolioExperience() {
                 onOpen={open}
                 onFailure={failure}
                 onPerformanceDrop={lowerQuality}
+                onSecret={discover}
+                golden={discovered.length === secrets.length}
               />
             </WorldBoundary>
             {travel.serial > 0 && (
@@ -578,7 +657,7 @@ export function PortfolioExperience() {
             <i />
           </button>
         </header>
-        <Calendar />
+        <Calendar onMoonTap={inspectMoon} />
         {mode === "entry" || failed ? (
           <section className="entry-copy">
             <p className="entry-kicker">
@@ -636,10 +715,17 @@ export function PortfolioExperience() {
             {target && ready && (
               <button
                 className="interaction-prompt"
-                onClick={() => open(target.section, target.project)}
+                onClick={() => {
+                  if (target.secret) discover(target.secret);
+                  else if (target.section) open(target.section, target.project);
+                }}
               >
                 <kbd>E</kbd>
-                <span>VIEW {target.label.toUpperCase()}</span>
+                <span>
+                  {target.secret
+                    ? target.label.toUpperCase()
+                    : `VIEW ${target.label.toUpperCase()}`}
+                </span>
                 <b>↗</b>
               </button>
             )}
@@ -665,6 +751,10 @@ export function PortfolioExperience() {
               : "A WORLD OF POSSIBILITIES"}
           </span>
           <div>
+            <PersonaRadio
+              location={mode === "entry" ? "contact" : currentLocation.id}
+              night={night}
+            />
             <button
               onClick={() => {
                 setSound((value) => !value);
@@ -732,6 +822,9 @@ export function PortfolioExperience() {
                   <div className="menu-secondary">
                     <button onClick={() => open("map")}>CAMPUS MAP ↗</button>
                     <button onClick={() => open("settings")}>SETTINGS ↗</button>
+                    <button onClick={() => open("journal")}>
+                      FIELD JOURNAL {discovered.length}/{secrets.length} ↗
+                    </button>
                   </div>
                 </div>
                 <div className="menu-portrait">
@@ -745,7 +838,12 @@ export function PortfolioExperience() {
               </div>
             ) : (
               <div className="panel-body">
-                {overlay === "settings" ? (
+                {overlay === "journal" ? (
+                  <SecretJournal
+                    discovered={discovered}
+                    onReset={resetDiscoveries}
+                  />
+                ) : overlay === "settings" ? (
                   <div className="settings-view">
                     <p className="panel-eyebrow">YOUR WORLD, YOUR WAY</p>
                     <label>
@@ -855,6 +953,38 @@ export function PortfolioExperience() {
               </button>
             </footer>
           </div>
+        </div>
+      )}
+      {secretToast && (
+        <div className="secret-toast" role="status" aria-live="polite">
+          <span className="secret-toast-symbol" aria-hidden="true">
+            {secrets.find((secret) => secret.id === secretToast)!.symbol}
+          </span>
+          <div>
+            <span>
+              HIDDEN STORY / {discovered.length} OF {secrets.length}
+            </span>
+            <strong>
+              {secrets.find((secret) => secret.id === secretToast)!.title}
+            </strong>
+            <p>
+              {secrets.find((secret) => secret.id === secretToast)!.message}
+            </p>
+            <button
+              onClick={() => {
+                setSecretToast(null);
+                open("journal");
+              }}
+            >
+              Open field journal ↗
+            </button>
+          </div>
+          <button
+            onClick={() => setSecretToast(null)}
+            aria-label="Dismiss discovery"
+          >
+            ×
+          </button>
         </div>
       )}
       <noscript>

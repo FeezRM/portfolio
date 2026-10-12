@@ -3,6 +3,7 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { memo, useEffect, useMemo, useRef, type RefObject } from "react";
 import * as THREE from "three";
+import type { SecretId } from "@/lib/game/secrets";
 import {
   destinations,
   exhibits,
@@ -11,6 +12,7 @@ import {
   planters,
   movePlayer,
   movementVector,
+  cameraOffset,
   nearestTarget,
   type Point,
   type Section,
@@ -29,6 +31,8 @@ export interface WorldProps {
   onOpen: (section: Section, project?: string) => void;
   onFailure: () => void;
   onPerformanceDrop: () => void;
+  onSecret: (id: SecretId) => void;
+  golden: boolean;
 }
 
 function Box({
@@ -505,18 +509,176 @@ function ClockTower() {
   );
 }
 
+function CampusSecrets({
+  onDiscover,
+  reducedMotion,
+}: {
+  onDiscover: (id: SecretId) => void;
+  reducedMotion: boolean;
+}) {
+  const tail = useRef<THREE.Mesh>(null);
+  useFrame(({ clock }) => {
+    if (tail.current && !reducedMotion)
+      tail.current.rotation.z = Math.sin(clock.elapsedTime * 5) * 0.2;
+  });
+  return (
+    <>
+      <group
+        position={[5.6, 0, -17]}
+        rotation={[0, -0.5, 0]}
+        onClick={(event) => {
+          event.stopPropagation();
+          onDiscover("campus-dog");
+        }}
+      >
+        <mesh position={[0, 0.4, 0]} scale={[0.7, 0.65, 1.1]} castShadow>
+          <sphereGeometry args={[0.4, 12, 8]} />
+          <meshToonMaterial color="#f5fbff" />
+        </mesh>
+        {[-0.17, 0.17].flatMap((x) =>
+          [-0.23, 0.23].map((z) => (
+            <Box
+              key={`${x}:${z}`}
+              position={[x, 0.15, z]}
+              scale={[0.12, 0.3, 0.16]}
+              color="#e1edf3"
+            />
+          )),
+        )}
+        <mesh position={[0, 0.65, 0.33]} castShadow>
+          <sphereGeometry args={[0.28, 12, 8]} />
+          <meshToonMaterial color="#f5fbff" />
+        </mesh>
+        {[-0.17, 0.17].map((x) => (
+          <mesh key={x} position={[x, 0.92, 0.29]} rotation={[0, 0, -x]}>
+            <coneGeometry args={[0.12, 0.28, 3]} />
+            <meshToonMaterial color="#dce7ef" />
+          </mesh>
+        ))}
+        <Box
+          position={[0, 0.63, 0.55]}
+          scale={[0.2, 0.15, 0.22]}
+          color="#f5fbff"
+        />
+        <Box
+          position={[0, 0.68, 0.67]}
+          scale={[0.08, 0.07, 0.045]}
+          color="#081020"
+        />
+        {[-0.12, 0.12].map((x) => (
+          <Box
+            key={x}
+            position={[x, 0.73, 0.565]}
+            scale={[0.055, 0.06, 0.025]}
+            color="#081020"
+          />
+        ))}
+        <Box
+          position={[0, 0.46, 0.31]}
+          scale={[0.46, 0.085, 0.16]}
+          color="#ff576f"
+        />
+        <mesh position={[0, 0.36, 0.42]} rotation={[0, 0, Math.PI]}>
+          <coneGeometry args={[0.14, 0.24, 3]} />
+          <meshToonMaterial color="#ff576f" />
+        </mesh>
+        <mesh ref={tail} position={[0, 0.53, -0.39]} rotation={[0.5, 0, 0]}>
+          <torusGeometry args={[0.2, 0.065, 6, 16, Math.PI * 1.6]} />
+          <meshToonMaterial color="#f5fbff" />
+        </mesh>
+      </group>
+      <group
+        position={[-13.5, 0, -8.5]}
+        onClick={(event) => {
+          event.stopPropagation();
+          onDiscover("velvet-door");
+        }}
+      >
+        <Box position={[0, 1.45, 0]} scale={[1.5, 2.9, 0.55]} color="#071841" />
+        <mesh position={[0, 1.45, 0.29]}>
+          <planeGeometry args={[1.22, 2.6]} />
+          <meshStandardMaterial
+            color="#124beb"
+            emissive="#123de8"
+            emissiveIntensity={0.65}
+          />
+        </mesh>
+        {[-0.58, 0.58].map((x) => (
+          <Box
+            key={x}
+            position={[x, 1.45, 0.31]}
+            scale={[0.04, 2.6, 0.025]}
+            color="#35f2ef"
+          />
+        ))}
+        <mesh position={[0, 2.15, 0.33]} rotation={[0, 0, Math.PI / 4]}>
+          <planeGeometry args={[0.22, 0.22]} />
+          <meshBasicMaterial color="#35f2ef" />
+        </mesh>
+        <Box
+          position={[0.34, 1.3, 0.35]}
+          scale={[0.08, 0.08, 0.07]}
+          color="#f8e66a"
+        />
+        <Sign
+          text="? / BETWEEN WORLDS"
+          position={[0, 3.16, 0.05]}
+          width={1.75}
+        />
+      </group>
+      <group
+        position={[12.5, 0, 8.5]}
+        onClick={(event) => {
+          event.stopPropagation();
+          onDiscover("moon-soda");
+        }}
+      >
+        <Box position={[0, 1.1, 0]} scale={[1.1, 2.2, 0.8]} color="#173ea9" />
+        <Box
+          position={[-0.12, 1.32, 0.41]}
+          scale={[0.64, 1.3, 0.03]}
+          color="#061841"
+        />
+        {[-0.28, 0, 0.27].flatMap((x) =>
+          [1.06, 1.6].map((y) => (
+            <Box
+              key={`${x}:${y}`}
+              position={[x - 0.09, y, 0.44]}
+              scale={[0.15, 0.32, 0.04]}
+              color={y > 1.5 ? "#35f2ef" : "#ff8bb4"}
+            />
+          )),
+        )}
+        <Box
+          position={[0.4, 1.13, 0.45]}
+          scale={[0.1, 0.2, 0.04]}
+          color="#f8e66a"
+        />
+        <Box
+          position={[0, 0.35, 0.42]}
+          scale={[0.65, 0.18, 0.03]}
+          color="#081020"
+        />
+        <Sign text="MOON SODA" position={[0, 2.1, 0.43]} width={0.95} />
+      </group>
+    </>
+  );
+}
+
 function Avatar({
   root,
   leftLeg,
   rightLeg,
   leftArm,
   rightArm,
+  golden,
 }: {
   root: RefObject<THREE.Group | null>;
   leftLeg: RefObject<THREE.Group | null>;
   rightLeg: RefObject<THREE.Group | null>;
   leftArm: RefObject<THREE.Group | null>;
   rightArm: RefObject<THREE.Group | null>;
+  golden: boolean;
 }) {
   const limb = (
     side: number,
@@ -530,7 +692,7 @@ function Avatar({
       <Box
         position={[0, leg ? -0.37 : -0.26, 0]}
         scale={leg ? [0.19, 0.73, 0.21] : [0.16, 0.51, 0.19]}
-        color={leg ? "#092449" : "#153ea9"}
+        color={leg ? "#092449" : golden ? "#ccb650" : "#153ea9"}
       />
       {leg ? (
         <Box
@@ -548,7 +710,11 @@ function Avatar({
   );
   return (
     <group ref={root}>
-      <Box position={[0, 1.17, 0]} scale={[0.46, 0.63, 0.28]} color="#173c99" />
+      <Box
+        position={[0, 1.17, 0]}
+        scale={[0.46, 0.63, 0.28]}
+        color={golden ? "#f8e66a" : "#173c99"}
+      />
       <Box
         position={[0, 1.3, 0.15]}
         scale={[0.14, 0.37, 0.015]}
@@ -621,7 +787,7 @@ function Avatar({
 }
 
 function Player(props: WorldProps) {
-  const { paused, onOpen } = props;
+  const { paused, onOpen, onSecret } = props;
   const root = useRef<THREE.Group>(null),
     leftLeg = useRef<THREE.Group>(null),
     rightLeg = useRef<THREE.Group>(null),
@@ -640,7 +806,12 @@ function Player(props: WorldProps) {
     position.current = { ...props.travel.position };
     velocity.current = { x: 0, z: 0 };
     keys.current.clear();
-    camera.position.set(position.current.x + 9, 12, position.current.z + 13);
+    const offset = cameraOffset(position.current);
+    camera.position.set(
+      position.current.x + offset.x,
+      offset.y,
+      position.current.z + offset.z,
+    );
   }, [props.travel, camera]);
   useEffect(() => {
     if (props.paused) {
@@ -684,7 +855,9 @@ function Player(props: WorldProps) {
         )
       ) {
         event.preventDefault();
-        onOpen(target.current.section, target.current.project);
+        if (target.current.secret) onSecret(target.current.secret);
+        else if (target.current.section)
+          onOpen(target.current.section, target.current.project);
       }
     };
     const up = (e: KeyboardEvent) => keys.current.delete(e.key.toLowerCase());
@@ -702,7 +875,7 @@ function Player(props: WorldProps) {
       window.removeEventListener("blur", clear);
       document.removeEventListener("visibilitychange", clear);
     };
-  }, [paused, onOpen]);
+  }, [paused, onOpen, onSecret]);
   useFrame((_, rawDelta) => {
     const delta = Math.min(rawDelta, 0.05);
     const input = keys.current;
@@ -714,7 +887,12 @@ function Player(props: WorldProps) {
       Number(input.has("s") || input.has("arrowdown")) -
       Number(input.has("w") || input.has("arrowup")) +
       props.joystick.current.z;
-    const direction = movementVector(horizontal, vertical),
+    const direction = movementVector(
+        horizontal,
+        vertical,
+        camera.position.x - position.current.x,
+        camera.position.z - position.current.z,
+      ),
       speed = 4.2;
     velocity.current.x = THREE.MathUtils.damp(
       velocity.current.x,
@@ -764,7 +942,12 @@ function Player(props: WorldProps) {
         rightArm.current.rotation.x = swing * 0.65;
       }
     }
-    cameraTarget.set(position.current.x + 9, 12, position.current.z + 13);
+    const offset = cameraOffset(position.current);
+    cameraTarget.set(
+      position.current.x + offset.x,
+      offset.y,
+      position.current.z + offset.z,
+    );
     camera.position.lerp(
       cameraTarget,
       props.reducedMotion ? 1 : 1 - Math.exp(-delta * 3),
@@ -789,6 +972,7 @@ function Player(props: WorldProps) {
       rightLeg={rightLeg}
       leftArm={leftArm}
       rightArm={rightArm}
+      golden={props.golden}
     />
   );
 }
@@ -938,6 +1122,10 @@ function Scene(props: WorldProps) {
         <Box position={[0, 0.7, 0.3]} scale={[0.08, 2, 0.08]} color="#35f2ef" />
       </group>
       <ClockTower />
+      <CampusSecrets
+        onDiscover={props.onSecret}
+        reducedMotion={props.reducedMotion}
+      />
       <group position={[7.5, 0, 8]}>
         <Box position={[0, 2, 0]} scale={[0.06, 4, 0.06]} color="#688ba4" />
         <Box
