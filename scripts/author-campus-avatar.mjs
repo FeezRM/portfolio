@@ -26,7 +26,7 @@ const materials = Object.fromEntries(
     skin: ["#bf8c69", 0.8],
     hair: ["#201d1b", 0.72],
     hairHighlight: ["#38302a", 0.73],
-    facialHair: ["#342921", 0.94],
+    facialHair: ["#453328", 0.94],
     lips: ["#a66f61", 0.78],
     frame: ["#20232a", 0.32],
     silver: ["#bcc7c6", 0.3],
@@ -73,7 +73,7 @@ const hips = bone("Hips", [0, 0.91, 0]);
 const spine = bone("Spine", [0, 0.27, 0], hips);
 const chest = bone("Chest", [0, 0.27, 0], spine);
 const neck = bone("Neck", [0, 0.17, 0], chest);
-const head = bone("Head", [0, 0.14, 0], neck);
+const head = bone("Head", [0, 0.22, 0], neck);
 for (const side of [-1, 1]) {
   const name = side === -1 ? "Left" : "Right";
   const arm = bone(`${name}Arm`, [side * 0.265, 0.015, 0], chest);
@@ -251,14 +251,28 @@ const chainPoints = [
 tube(chainPoints, 0.0043, "silver", chest, 64).name = "Silver_Chain";
 sphere([0, 0, 0], [0.065, 0.14, 0.064], "skin", neck);
 // Head shape is sculpted from a sphere, with a narrower jaw and flattened facial plane.
-const face = new THREE.SphereGeometry(1, 40, 32),
+function faceSurface(x, y) {
+  const ny = y / 0.235;
+  const jaw = 1 - THREE.MathUtils.smoothstep(-ny, 0.1, 0.95) * 0.14;
+  const bridge =
+    Math.exp(-((x / 0.024) ** 2) - ((y + 0.024) / 0.066) ** 2) * 0.018;
+  const tip = Math.exp(-((x / 0.03) ** 2) - ((y + 0.071) / 0.022) ** 2) * 0.035;
+  return (
+    0.173 * Math.sqrt(Math.max(0, 1 - ny ** 2 - (x / (0.185 * jaw)) ** 2)) +
+    bridge +
+    tip
+  );
+}
+const face = new THREE.SphereGeometry(1, 64, 48),
   fp = face.getAttribute("position");
 for (let i = 0; i < fp.count; i++) {
   const x = fp.getX(i),
     y = fp.getY(i),
     z = fp.getZ(i);
-  const jaw = y < -0.15 ? 0.75 + (y + 1) * 0.24 : 1;
-  fp.setXYZ(i, x * 0.192 * jaw, y * 0.254, z * 0.184 * (z > 0 ? 0.94 : 1));
+  const jaw = 1 - THREE.MathUtils.smoothstep(-y, 0.1, 0.95) * 0.14;
+  const px = x * 0.185 * jaw,
+    py = y * 0.235;
+  fp.setXYZ(i, px, py, z > 0 ? faceSurface(px, py) : z * 0.18);
 }
 face.computeVertexNormals();
 const faceColors = [];
@@ -272,8 +286,12 @@ for (let i = 0; i < fp.count; i++) {
     THREE.MathUtils.smoothstep(x, 0.032, 0.045) *
     (1 - THREE.MathUtils.smoothstep(x, 0.068, 0.085)) *
     THREE.MathUtils.smoothstep(y, 0.183, 0.195);
-  const coverage = fp.getZ(i) > 0 ? Math.max(center, sides) : 0;
-  const shade = 1 - coverage * 0.94;
+  const coverage =
+    fp.getZ(i) > 0.04
+      ? Math.max(center, sides) *
+        (1 - THREE.MathUtils.smoothstep(y, 0.214, 0.233))
+      : 0;
+  const shade = 1 - coverage * 0.75;
   faceColors.push(shade, shade, shade);
 }
 face.setAttribute("color", new THREE.Float32BufferAttribute(faceColors, 3));
@@ -282,30 +300,52 @@ faceMesh.name = "Faiz_Face";
 faceMesh.material = materials.skin.clone();
 faceMesh.material.name = "Face_Skin";
 faceMesh.material.vertexColors = true;
-sphere([0, -0.038, 0.174], [0.027, 0.051, 0.03], "skin", head, 20);
-sphere([0, -0.078, 0.19], [0.031, 0.022, 0.028], "skin", head, 20);
+// Eyes sit on the facial surface instead of protruding as separate eyeballs.
+function faceDetail(geometry, x, y, material, offset = 0.002) {
+  const positions = geometry.getAttribute("position");
+  for (let i = 0; i < positions.count; i++) {
+    const px = positions.getX(i) + x,
+      py = positions.getY(i) + y;
+    positions.setXYZ(i, px, py, faceSurface(px, py) + offset);
+  }
+  geometry.computeVertexNormals();
+  return smoothMesh(geometry, material, head);
+}
 for (const side of [-1, 1]) {
-  sphere(
-    [side * 0.076, 0.021, 0.163],
-    [0.042, 0.018, 0.013],
+  const eyeShape = new THREE.Shape();
+  eyeShape.moveTo(-0.033, 0);
+  eyeShape.quadraticCurveTo(0, 0.021, 0.033, 0);
+  eyeShape.quadraticCurveTo(0, -0.017, -0.033, 0);
+  faceDetail(
+    new THREE.ShapeGeometry(eyeShape, 16),
+    side * 0.073,
+    0.022,
     "highlight",
-    head,
-    24,
+  ).name = `${side < 0 ? "Left" : "Right"}_Eye`;
+  faceDetail(
+    new THREE.CircleGeometry(0.0085, 24),
+    side * 0.073,
+    0.023,
+    "eye",
+    0.004,
   );
-  sphere([side * 0.076, 0.019, 0.176], [0.016, 0.018, 0.008], "eye", head, 20);
-  sphere(
-    [side * 0.071, 0.026, 0.183],
-    [0.005, 0.006, 0.003],
+  faceDetail(
+    new THREE.CircleGeometry(0.002, 12),
+    side * 0.073 - 0.0025,
+    0.026,
     "highlight",
-    head,
-    12,
+    0.005,
   );
   const brow = smoothMesh(
     new THREE.CapsuleGeometry(0.006, 0.066, 4, 12),
     "hair",
     head,
   );
-  brow.position.set(side * 0.08, 0.061, 0.16);
+  brow.position.set(
+    side * 0.075,
+    0.06,
+    faceSurface(side * 0.075, 0.06) + 0.003,
+  );
   brow.rotation.z = side * 1.42;
   sphere(
     [side * 0.192, -0.013, -0.002],
@@ -391,12 +431,16 @@ tube(
   head,
   16,
 ).name = "Glasses_Bridge";
-sphere([0, -0.132, 0.155], [0.038, 0.006, 0.007], "lips", head, 20);
-sphere([0, -0.143, 0.15], [0.035, 0.009, 0.007], "lips", head, 20);
+const mouth = new THREE.Shape();
+mouth.moveTo(-0.033, 0);
+mouth.quadraticCurveTo(-0.01, 0.006, 0, 0.003);
+mouth.quadraticCurveTo(0.014, 0.006, 0.033, 0);
+mouth.quadraticCurveTo(0, -0.015, -0.033, 0);
+faceDetail(new THREE.ShapeGeometry(mouth, 20), 0, -0.13, "lips", 0.002);
 for (const side of [-1, 1]) {
   const mustache = sphere(
-    [side * 0.024, -0.109, 0.166],
-    [0.031, 0.008, 0.006],
+    [side * 0.023, -0.108, faceSurface(side * 0.023, -0.108) + 0.002],
+    [0.027, 0.0055, 0.003],
     "facialHair",
     head,
     16,
@@ -441,23 +485,19 @@ function beardPatch(points, name) {
   for (let i = 0; i < positions.count; i++) {
     const x = positions.getX(i),
       y = positions.getY(i),
-      normalizedY = y / 0.254;
-    const jaw = normalizedY < -0.15 ? 0.75 + (normalizedY + 1) * 0.24 : 1;
-    const z =
-      0.184 *
-      0.94 *
-      Math.sqrt(Math.max(0, 1 - normalizedY ** 2 - (x / (0.192 * jaw)) ** 2));
-    positions.setZ(i, z + (name === "Goatee" ? 0.018 : 0.006));
+      z = faceSurface(x, y);
+    positions.setZ(i, z + 0.002);
   }
   geometry.computeVertexNormals();
   smoothMesh(geometry, "facialHair", head).name = name;
 }
 beardPatch(
   [
-    [-0.012, -0.161],
-    [0.014, -0.161],
-    [0.009, -0.18],
-    [-0.008, -0.18],
+    [-0.009, -0.16],
+    [0.009, -0.16],
+    [0.007, -0.173],
+    [0, -0.177],
+    [-0.006, -0.173],
   ],
   "Soul_Patch",
 );
@@ -497,7 +537,7 @@ function lock(points, radius, material = "hair") {
   for (let i = 0; i <= steps; i++) {
     const t = i / steps,
       p = curve.getPointAt(t),
-      r = radius * Math.pow(1 - t, 0.65) + 0.001;
+      r = radius * Math.pow(1 - t, 0.85) + 0.003;
     for (let j = 0; j <= radial; j++) {
       const a = (j / radial) * Math.PI * 2;
       const v = p

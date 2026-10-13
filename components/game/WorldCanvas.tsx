@@ -12,6 +12,7 @@ import {
   type RefObject,
 } from "react";
 import { AvatarModel } from "./AvatarModel";
+import { WorldAnimation, useWorldFrame } from "./WorldAnimation";
 import {
   CampusBuilding,
   CampusTree,
@@ -158,9 +159,8 @@ function Beacon({
   reducedMotion: boolean;
 }) {
   const ring = useRef<THREE.Mesh>(null);
-  useFrame(({ clock }) => {
-    if (ring.current && !reducedMotion)
-      ring.current.rotation.z = clock.elapsedTime * 0.5;
+  useWorldFrame((time) => {
+    if (ring.current && !reducedMotion) ring.current.rotation.z = time * 0.5;
   });
   return (
     <group
@@ -195,9 +195,9 @@ function Exhibits({
   reducedMotion: boolean;
 }) {
   const sculpture = useRef<THREE.Group>(null);
-  useFrame(({ clock }) => {
+  useWorldFrame((time) => {
     if (sculpture.current && !reducedMotion)
-      sculpture.current.rotation.y = clock.elapsedTime * 0.18;
+      sculpture.current.rotation.y = time * 0.18;
   });
   return (
     <>
@@ -333,11 +333,9 @@ function Harbor({
     }),
     [],
   );
-  useFrame(({ clock }) => {
+  useWorldFrame((time) => {
     if (material.current) {
-      material.current.uniforms.uTime.value = reducedMotion
-        ? 0
-        : clock.elapsedTime;
+      material.current.uniforms.uTime.value = reducedMotion ? 0 : time;
       material.current.uniforms.uColor.value.set(night ? "#12334b" : "#2c7788");
     }
   });
@@ -402,9 +400,9 @@ function CampusSecrets({
   reducedMotion: boolean;
 }) {
   const tail = useRef<THREE.Mesh>(null);
-  useFrame(({ clock }) => {
+  useWorldFrame((time) => {
     if (tail.current && !reducedMotion)
-      tail.current.rotation.z = Math.sin(clock.elapsedTime * 5) * 0.2;
+      tail.current.rotation.z = Math.sin(time * 5) * 0.2;
   });
   return (
     <>
@@ -578,6 +576,7 @@ function Player(props: WorldProps) {
     if (props.paused) {
       keys.current.clear();
       velocity.current = { x: 0, z: 0 };
+      animationSpeed.current = 0;
     }
   }, [props.paused]);
   useEffect(() => {
@@ -624,8 +623,7 @@ function Player(props: WorldProps) {
       document.removeEventListener("visibilitychange", clear);
     };
   }, [paused, onOpen, onSecret]);
-  useFrame((_, rawDelta) => {
-    const delta = Math.min(rawDelta, 0.05);
+  useWorldFrame((_, delta) => {
     const input = keys.current;
     const horizontal =
       Number(input.has("d") || input.has("arrowright")) -
@@ -708,7 +706,7 @@ function Player(props: WorldProps) {
         props.onTarget(next);
       }
     }
-  });
+  }, -1);
   return (
     <AvatarModel
       root={root}
@@ -941,7 +939,9 @@ function WorldCanvas(props: WorldProps) {
       fallback={<span aria-hidden="true" />}
     >
       <Suspense fallback={null}>
-        <Scene {...props} />
+        <WorldAnimation paused={props.paused}>
+          <Scene {...props} />
+        </WorldAnimation>
       </Suspense>
     </Canvas>
   );

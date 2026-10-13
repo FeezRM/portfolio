@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { useFrame } from "@react-three/fiber";
+import { useWorldFrame } from "./WorldAnimation";
 import * as THREE from "three";
 import { DetailBox } from "./CampusArchitecture";
 import { contentAlchemy, isPublicInstagramHref } from "@/lib/game/alchemy";
@@ -17,11 +17,11 @@ export function AlchemyDiscoveries({
   children?: React.ReactNode;
 }) {
   const seal = useRef<THREE.Group>(null);
-  useFrame(({ clock }) => {
+  useWorldFrame((time) => {
     if (seal.current) {
       seal.current.position.y =
-        1.95 + (reducedMotion ? 0 : Math.sin(clock.elapsedTime * 1.2) * 0.045);
-      seal.current.rotation.y = reducedMotion ? 0 : clock.elapsedTime * 0.13;
+        1.95 + (reducedMotion ? 0 : Math.sin(time * 1.2) * 0.045);
+      seal.current.rotation.y = reducedMotion ? 0 : time * 0.13;
     }
   });
   return (

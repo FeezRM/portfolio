@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, type RefObject } from "react";
-import { useFrame } from "@react-three/fiber";
-import { useAnimations, useGLTF } from "@react-three/drei";
+import { useGLTF } from "@react-three/drei";
+import { useWorldFrame } from "./WorldAnimation";
 import { clone } from "three/addons/utils/SkeletonUtils.js";
 import * as THREE from "three";
-const avatarUrl = "/models/faiz-blue-hour.glb?v=likeness-1";
+const avatarUrl = "/models/faiz-blue-hour.glb?v=likeness-2";
 
 export function AvatarModel({
   root,
@@ -37,16 +37,23 @@ export function AvatarModel({
     });
     return { character, coatMaterials };
   }, [gltf.scene]);
-  const { actions } = useAnimations(gltf.animations, character);
+  const mixer = useMemo(() => new THREE.AnimationMixer(character), [character]);
+  const actions = useMemo(
+    () =>
+      Object.fromEntries(
+        gltf.animations.map((clip) => [clip.name, mixer.clipAction(clip)]),
+      ),
+    [gltf.animations, mixer],
+  );
   useEffect(() => {
     actions.Idle?.play();
     actions.Walk?.play();
     actions.Walk?.setEffectiveWeight(0);
     return () => {
-      actions.Idle?.stop();
-      actions.Walk?.stop();
+      mixer.stopAllAction();
+      mixer.uncacheRoot(character);
     };
-  }, [actions]);
+  }, [actions, mixer, character]);
   useEffect(() => {
     coatMaterials.forEach((material) =>
       material.color.set(golden ? "#c1a353" : "#17222c"),
@@ -56,7 +63,7 @@ export function AvatarModel({
     () => () => coatMaterials.forEach((m) => m.dispose()),
     [coatMaterials],
   );
-  useFrame((_, delta) => {
+  useWorldFrame((_, delta) => {
     const walk = actions.Walk,
       idle = actions.Idle;
     if (!walk || !idle) return;
@@ -74,6 +81,7 @@ export function AvatarModel({
       THREE.MathUtils.clamp(speed.current / 3.1, 0.65, 1.35),
     );
     idle.setEffectiveTimeScale(reducedMotion ? 0 : 1);
+    mixer.update(delta);
   });
   return (
     <group ref={root}>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef } from "react";
-import { useFrame } from "@react-three/fiber";
+import { useWorldFrame } from "./WorldAnimation";
 import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 import { StaticBatch } from "./StaticBatch";
@@ -481,11 +481,11 @@ export function CampusTree({
     foliage.current.computeBoundingSphere();
     leaves.current.computeBoundingSphere();
   }, [seed]);
-  useFrame(({ clock }) => {
+  useWorldFrame((time) => {
     if (crown.current)
       crown.current.rotation.z = reducedMotion
         ? 0
-        : Math.sin(clock.elapsedTime * 0.65 + seed) * 0.009;
+        : Math.sin(time * 0.65 + seed) * 0.009;
   });
   return (
     <group position={[x, 0, z]} scale={size}>

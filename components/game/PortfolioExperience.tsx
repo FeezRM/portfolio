@@ -23,6 +23,10 @@ import {
 } from "@/lib/game/world";
 import { playTone } from "@/lib/game/audio";
 import {
+  restoreInterfaceSound,
+  soundPreferenceVersion,
+} from "@/lib/game/preferences";
+import {
   rootNavigation,
   openPanel,
   backPanel,
@@ -58,6 +62,7 @@ const WorldCanvas = dynamic(() => import("./WorldCanvas"), {
 const settingsKey = "faiz-blue-hour-v1";
 type Settings = {
   sound: boolean;
+  soundPreferenceVersion: number;
   quality: "high" | "low";
   night: boolean;
   motion: boolean;
@@ -253,7 +258,7 @@ export function PortfolioExperience() {
   const [mode, setMode] = useState<"entry" | "explore">("entry"),
     [overlay, setOverlay] = useState<Overlay>(null),
     [projectId, setProjectId] = useState<string | undefined>();
-  const [sound, setSound] = useState(false),
+  const [sound, setSound] = useState(true),
     [quality, setQuality] = useState<"high" | "low">("high"),
     [night, setNight] = useState(false),
     [motion, setMotion] = useState(false),
@@ -467,7 +472,7 @@ export function PortfolioExperience() {
           localStorage.getItem(settingsKey) ?? "null",
         ) as Partial<Settings> | null;
         if (saved) {
-          setSound(saved.sound === true);
+          setSound(restoreInterfaceSound(saved));
           setQuality(saved.quality === "low" ? "low" : "high");
           setNight(saved.night === true);
           setMotion(saved.motion === true);
@@ -509,6 +514,7 @@ export function PortfolioExperience() {
           settingsKey,
           JSON.stringify({
             sound,
+            soundPreferenceVersion,
             quality,
             night,
             motion,
@@ -834,7 +840,7 @@ export function PortfolioExperience() {
         aria-labelledby={overlay ? "panel-title" : undefined}
       >
         {overlay && (
-          <div className={`overlay-layer overlay-${overlay}`}>
+          <div key={overlay} className={`overlay-layer overlay-${overlay}`}>
             <div className="overlay-water" aria-hidden="true" />
             <div className="overlay-diagonal" aria-hidden="true" />
             <span className="overlay-ghost" aria-hidden="true">
@@ -995,7 +1001,7 @@ export function PortfolioExperience() {
                         <button
                           className="text-button"
                           onClick={() => {
-                            setSound(false);
+                            setSound(true);
                             setNight(false);
                             setMotion(false);
                             setQuality("high");
