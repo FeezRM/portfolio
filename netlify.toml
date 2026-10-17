@@ -1,3 +1,11 @@
 [build]
   command = "npm run build"
   publish = "out"
+
+# The homepage defaults to the game. To feature the classic site, change only `to`.
+# A temporary redirect keeps this choice reversible and preserves old URL fragments.
+[[redirects]]
+  from = "/"
+  to = "/game/"
+  status = 302
+  force = true

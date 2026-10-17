@@ -11,7 +11,8 @@
     "lint": "eslint . --max-warnings=0",
     "typecheck": "tsc --noEmit",
     "test": "node --test tests/*.test.mjs",
-    "preview": "node scripts/preview.mjs"
+    "preview": "node scripts/preview.mjs",
+    "verify:experiences": "node scripts/verify-experiences.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.9",

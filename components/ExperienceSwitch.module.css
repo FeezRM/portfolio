@@ -1,0 +1,50 @@
+.switch {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  gap: 8px;
+  min-height: 38px;
+  padding: 9px 13px;
+  font-family: var(--font-mono), monospace;
+  font-size: 10px;
+  line-height: 1.4;
+  letter-spacing: 0.055em;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.fromGame {
+  color: #baf8f3;
+  border: 1px solid #8cdad455;
+  background: #0d307866;
+}
+.fromGame:hover {
+  background: #123de8;
+  color: #fff;
+}
+.fromClassic {
+  border: 1px solid #22d3ee66;
+  border-radius: 999px;
+  color: #67e8f9;
+  background: #22d3ee0a;
+}
+.fromClassic:hover {
+  background: #22d3ee20;
+  border-color: #22d3ee;
+}
+.switch.fromGame > span,
+.switch.fromClassic > span {
+  margin: 0;
+  color: inherit;
+}
+.switch:focus-visible {
+  outline: 2px solid #67e8f9;
+  outline-offset: 4px;
+}
+@media (max-width: 400px) {
+  .switch {
+    padding-inline: 9px;
+    gap: 6px;
+    font-size: 9px;
+  }
+}

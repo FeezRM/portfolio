@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
-import { Barlow_Condensed, JetBrains_Mono, Manrope } from "next/font/google";
+import { JetBrains_Mono, Manrope, Syne } from "next/font/google";
 import type { ReactNode } from "react";
-import "./globals.css";
+import { MouseGlow } from "@/components/effects/MouseGlow";
+import "./classic.css";
 
-const display = Barlow_Condensed({
+const display = Syne({
   subsets: ["latin"],
-  weight: ["500", "600", "700", "800", "900"],
-  style: ["normal", "italic"],
   variable: "--font-display",
   display: "swap",
 });
@@ -42,9 +41,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
+        data-experience="classic"
         suppressHydrationWarning
         className={`${display.variable} ${body.variable} ${mono.variable} font-sans antialiased`}
       >
+        <MouseGlow />
         {children}
       </body>
     </html>

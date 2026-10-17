@@ -561,8 +561,9 @@ a {
 }
 .entry-links {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 25px;
+  gap: 10px 25px;
   margin-top: 25px;
   font-family: var(--font-mono), monospace;
   font-size: 9px;
@@ -1973,7 +1974,7 @@ a {
   }
   .entry-links {
     font-size: 7px;
-    gap: 23px;
+    gap: 10px 18px;
     margin-top: 16px;
   }
   .entry-portrait {

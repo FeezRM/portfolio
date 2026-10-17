@@ -1,13 +1,14 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
+import { ExperienceSwitch } from "@/components/ExperienceSwitch";
 
 const navItems = [
   { label: "Startup", href: "#stealth" },
   { label: "Work", href: "#projects" },
   { label: "Skills", href: "#skills" },
   { label: "Experience", href: "#experience" },
-  { label: "Contact", href: "#contact" }
+  { label: "Contact", href: "#contact" },
 ];
 
 export function Navbar() {
@@ -21,7 +22,11 @@ export function Navbar() {
         aria-label="Primary navigation"
         className="mx-auto flex max-w-6xl items-center justify-between rounded-full border border-white/10 bg-bg/90 px-4 py-3 shadow-panel backdrop-blur-md md:px-5"
       >
-        <a className="font-display text-sm font-semibold text-primary md:text-base" href="#home" onClick={close}>
+        <a
+          className="font-display text-sm font-semibold text-primary md:text-base"
+          href="#home"
+          onClick={close}
+        >
           Faiz Kerawala
         </a>
 
@@ -29,7 +34,7 @@ export function Navbar() {
           {navItems.map((item) => (
             <a
               key={item.href}
-              className="rounded-full px-4 py-2 font-mono text-[0.68rem] uppercase tracking-[0.14em] text-muted transition hover:bg-white/[0.055] hover:text-primary"
+              className="rounded-full px-3 py-2 font-mono text-[0.68rem] uppercase tracking-[0.14em] text-muted transition hover:bg-white/[0.055] hover:text-primary"
               href={item.href}
             >
               {item.label}
@@ -38,8 +43,9 @@ export function Navbar() {
         </div>
 
         <div className="flex items-center gap-2">
+          <ExperienceSwitch to="game" />
           <a
-            className="rounded-full border border-cyan/30 px-3 py-2 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-cyan transition hover:bg-cyan/[0.08] md:px-4"
+            className="hidden rounded-full border border-cyan/30 px-3 py-2 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-cyan transition hover:bg-cyan/[0.08] sm:inline-flex md:px-4"
             href="mailto:faiz.kera@gmail.com"
           >
             Email
@@ -52,12 +58,28 @@ export function Navbar() {
             onClick={() => setMobileOpen((o) => !o)}
           >
             {mobileOpen ? (
-              <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <svg
+                width="13"
+                height="13"
+                viewBox="0 0 13 13"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+              >
                 <line x1="1" y1="1" x2="12" y2="12" />
                 <line x1="12" y1="1" x2="1" y2="12" />
               </svg>
             ) : (
-              <svg width="14" height="11" viewBox="0 0 14 11" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <svg
+                width="14"
+                height="11"
+                viewBox="0 0 14 11"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+              >
                 <line x1="1" y1="1" x2="13" y2="1" />
                 <line x1="1" y1="5.5" x2="13" y2="5.5" />
                 <line x1="1" y1="10" x2="13" y2="10" />

@@ -22,6 +22,7 @@ import {
   type nearestTarget,
 } from "@/lib/game/world";
 import { playTone } from "@/lib/game/audio";
+import { ExperienceSwitch } from "@/components/ExperienceSwitch";
 import {
   restoreInterfaceSound,
   soundPreferenceVersion,
@@ -754,6 +755,7 @@ export function PortfolioExperience() {
               </p>
             )}
             <nav className="entry-links" aria-label="Quick portfolio links">
+              <ExperienceSwitch to="classic" />
               <button onClick={() => open("profile")}>ABOUT ME</button>
               <a href="/resume.md" download="Faiz-Kerawala-Resume.md">
                 RESUME <span>↓</span>
@@ -879,6 +881,7 @@ export function PortfolioExperience() {
                       </button>
                     ))}
                     <div className="menu-secondary">
+                      <ExperienceSwitch to="classic" />
                       <button onClick={() => open("map")}>CAMPUS MAP ↗</button>
                       <button onClick={() => open("settings")}>
                         SETTINGS ↗

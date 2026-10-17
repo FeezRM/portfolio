@@ -1,5 +1,5 @@
 import { PortfolioExperience } from "@/components/game/PortfolioExperience";
 
-export default function Home() {
+export default function GameHome() {
   return <PortfolioExperience />;
 }
